@@ -5,9 +5,10 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
+    "typecheck": "tsc --noEmit --skipLibCheck --watch",
     "build": "tsc --build",
     "start": "node ./dist/index.js",
-    "start:dev": "nodemon ./src/index.ts"
+    "start:dev": "concurrently -n \"APP,TS\" -c \"blue,magenta\" \"nodemon --exec tsx ./src/index.ts\" \"npm run typecheck\""
   },
   "keywords": [],
   "author": "",
@@ -18,8 +19,9 @@
   },
   "devDependencies": {
     "@types/express": "^5.0.5",
+    "concurrently": "^9.2.1",
     "nodemon": "^3.1.11",
-    "ts-node": "^10.9.2",
+    "tsx": "^4.20.6",
     "typescript": "^5.9.3"
   }
 }
