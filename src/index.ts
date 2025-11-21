@@ -1,12 +1,17 @@
+import { config } from "dotenv";
 import express from 'express';
 import appRouter from './routes/index.js';
+import { connectToDb } from "./utils/db.js";
+
+config();
 
 const app = express();
-const PORT =  3000;
+const PORT =  process.env.PORT;
 
 app.use(express.json());
 
 app.use("/api",appRouter);
-app.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}`);
-});
+
+connectToDb()
+  .then(() => app.listen(PORT, () =>  (`listening on port ${PORT}`)))
+  .catch((error) => console.error(error.message));
