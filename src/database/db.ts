@@ -1,18 +1,19 @@
-import { connect, disconnect } from "mongoose";
+import mongoose from "mongoose";
 
 // Connect to MongoDB
 
 const connectToDb =async ():Promise<void> =>
-  await connect(process.env.MONGODB_CONNECTION_URI!)
+  await mongoose.connect(process.env.MONGODB_CONNECTION_URI!)
     .then(() => {
       console.log("Connected to MongoDB");
     })
     .catch((error) => console.error("Error connecting to MongoDB:", error));
 
 const disconnectFromDb = async ():Promise<void> =>
-  await disconnect().catch((error) =>
+  await mongoose.disconnect().catch((error) =>
     console.error("Error couldn't disconnect from MongoDB:", error)
   );
 
-export { connectToDb, disconnectFromDb };
+
+export { connectToDb, disconnectFromDb, mongoose };
 

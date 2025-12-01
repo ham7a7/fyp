@@ -15,18 +15,25 @@
   "license": "ISC",
   "type": "module",
   "dependencies": {
+    "bcrypt": "^6.0.0",
+    "connect-mongo": "^6.0.0",
     "cookie-parser": "^1.4.7",
     "dotenv": "^17.2.3",
     "express": "^5.1.0",
     "express-session": "^1.18.2",
     "express-validator": "^7.3.1",
     "mongodb": "^7.0.0",
-    "mongoose": "^8.20.1"
+    "mongoose": "^9.0.0",
+    "passport": "^0.7.0",
+    "passport-local": "^1.0.0"
   },
   "devDependencies": {
+    "@types/bcrypt": "^6.0.0",
     "@types/cookie-parser": "^1.4.10",
     "@types/express": "^5.0.5",
     "@types/express-session": "^1.18.2",
+    "@types/passport": "^1.0.17",
+    "@types/passport-local": "^1.0.38",
     "concurrently": "^9.2.1",
     "nodemon": "^3.1.11",
     "tsx": "^4.20.6",

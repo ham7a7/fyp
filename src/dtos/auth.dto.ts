@@ -1,6 +1,6 @@
 // Dtos are only for body params
 export interface LoginDto {
-    username: string;
+    email: string;
     password: string;
 }
 
