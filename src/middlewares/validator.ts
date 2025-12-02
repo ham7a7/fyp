@@ -7,6 +7,5 @@ export default function validator(req:Request, res:Response, next:NextFunction) 
         // Stop the request here if there are errors
         return res.status(400).json({ errors: validate.array() });
     }
-    // Perform validation logic here
     next();
 }

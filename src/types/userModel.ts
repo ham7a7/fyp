@@ -7,6 +7,7 @@ export interface IUserModel {
     email: string;
     password: string;
     isEmailVerified: boolean;
+    bots: mongoose.Types.ObjectId[];
     createdAt: Date;
     updatedAt: Date;
 }
