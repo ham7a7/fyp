@@ -22,7 +22,6 @@ export const BotSchema: Schema<IBotModel> = new Schema(
       default: "Active",
       required: true,
     },
-    origins: [{ type: String }],
     // intents: [{ type: mongoose.Types.ObjectId, ref: "Intent" }],
     // knowledgeBase: {
     //   type: mongoose.Types.ObjectId,
@@ -40,6 +39,7 @@ export const BotSchema: Schema<IBotModel> = new Schema(
     //   required: true,
     // },
     publicBotId: { type: String, required: true, unique: true },
+    origins: [{ type: String }],
     apiKey: { type: String, required: true, unique: true },
   },
   { timestamps: true }

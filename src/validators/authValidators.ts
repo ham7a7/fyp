@@ -36,22 +36,16 @@ export const createBotValidators: ValidationChain[] = [
     .isString()
     .withMessage("Name must be a string")
     .isLength({ min: 3, max: 50 })
-    .withMessage("Full name must be at least between 3 and 50 characters"),
+    .withMessage("Bot name must be at least between 3 and 50 characters"),
   body("botDescription")
-    .isEmpty()
-    .withMessage("Bot name must not be empty")
     .isString()
     .withMessage("Description must be a string")
-    .isLength({ min: 0, max: 1000 })
+    .isLength({ min: 5, max: 1000 })
     .withMessage("Description must be at least between 0 and 1000 characters"),
   body("botUsecase")
     .isString()
     .withMessage("Usecase must be a string")
     .isIn(["Website", "Mobile App", "Other"])
     .withMessage("Usecase must be one of Website, Mobile App, Other"),
-  body("botLanguage")
-    .isEmpty()
-    .withMessage("Bot name must not be empty")
-    .isString()
-    .withMessage("Language must be a string"),
+  body("botLanguage").isString().withMessage("Bot language must be a string"),
 ];
