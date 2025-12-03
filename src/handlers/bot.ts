@@ -1,6 +1,11 @@
 import type { Request, Response } from "express";
+import mongoose from "mongoose";
 import BotModel from "../database/schemas/bot.js";
-import type { CreateBotDto } from "../dtos/bot.dto.js";
+import type {
+  CreateBotDto,
+  DeleteBotDto,
+  EditBotDto,
+} from "../dtos/bot.dto.js";
 import { decrypt, encrypt, generateKey } from "../utils/cryptoUtils.js";
 
 export const createBot = async (
@@ -36,6 +41,64 @@ export const createBot = async (
       bot: newBot,
       apiKey: decrypt(encryptedAPIKey),
       publicBotId: decrypt(encryptedBotId),
+    });
+  } catch (error) {
+    return Res.status(500).json({ message: "Server error", error });
+  }
+};
+
+export const deleteBot = async (
+  req: Request<{}, {}, DeleteBotDto>,
+  Res: Response
+) => {
+  const { botId } = req.body;
+  try {
+    if (!mongoose.Types.ObjectId.isValid(botId)) {
+      return Res.status(400).json({ message: "Invalid Bot ID" });
+    }
+    const bot = await BotModel.findByIdAndDelete(botId);
+    if (!bot) {
+      return Res.status(404).json({ message: "Bot not found" });
+    }
+    return Res.status(200).json({ message: "Bot deleted successfully" });
+  } catch (error) {
+    return Res.status(500).json({ message: "Server error", error });
+  }
+};
+
+export const editBot = async (
+  req: Request<{}, {}, EditBotDto>,
+  Res: Response
+) => {
+  const { botId, botDescription, botName, botUsecase, botLanguage } = req.body;
+  try {
+    if (!mongoose.Types.ObjectId.isValid(botId)) {
+      return Res.status(400).json({ message: "Invalid Bot ID" });
+    }
+    let updateObject: Record<string, any> = {
+      name: botName,
+      description: botDescription,
+      usecase: botUsecase,
+      language: botLanguage,
+    };
+
+    // remove properties with null or undefined values
+    updateObject = Object.fromEntries(
+      Object.entries(updateObject).filter(
+        ([, value]) => value !== null && value !== undefined
+      )
+    );
+
+    const bot = await BotModel.findByIdAndUpdate(botId, updateObject, {
+      new: true,
+    });
+    if (!bot) {
+      return Res.status(404).json({ message: "Bot not found" });
+    }
+
+    return Res.status(200).json({
+      message: "Bot updated successfully",
+      updatedBot: bot,
     });
   } catch (error) {
     return Res.status(500).json({ message: "Server error", error });
