@@ -1,11 +1,21 @@
 import { Router } from "express";
 import passport from "passport";
-import { loginHandler, registrationHandler } from '../handlers/auth.js';
+import { loginHandler, logout, registrationHandler } from "../handlers/auth.js";
 import validator from "../middlewares/validator.js";
-import { loginValidators, registrationValidators } from "../validators/authValidators.js";
+import {
+  loginValidators,
+  registrationValidators,
+} from "../validators/authValidators.js";
 
-const auth:Router = Router();
-auth.post("/register",registrationValidators,validator,registrationHandler);
-auth.post("/login",loginValidators,validator,passport.authenticate("local"),loginHandler);
+const auth: Router = Router();
+auth.post("/register", registrationValidators, validator, registrationHandler);
+auth.post(
+  "/login",
+  loginValidators,
+  validator,
+  passport.authenticate("local"),
+  loginHandler
+);
+auth.post("/logout", logout);
 
 export default auth;

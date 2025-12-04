@@ -13,8 +13,9 @@ passport.serializeUser((user: any, done) => {
 passport.deserializeUser(async (id, done) => {
   try {
     const user = await UserModel.findById(id);
+    if (!user) throw new Error("User not found");
     done(null, user);
-  } catch (err) {
+  } catch (err: any) {
     done(err);
   }
 });
@@ -25,19 +26,18 @@ passport.use(
     async (email, password, done) => {
       try {
         // 1. Find user
-        const user:IUserModel | null = await UserModel.findOne({ email });
+        const user: IUserModel | null = await UserModel.findOne({ email });
         if (!user) throw new Error("User not found");
 
         // 2. Compare password
         const isMatch = await compare(password, user.password);
-        if (!isMatch) throw new Error("Incorrect password"); 
+        if (!isMatch) throw new Error("Incorrect password");
 
         // 3. Success
         return done(null, user);
-      } catch (err:ErrorConstructor | any) {
-        return done(err?.message);
+      } catch (err: any) {
+        return done(err);
       }
     }
   )
 );
-

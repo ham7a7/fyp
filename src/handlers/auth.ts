@@ -1,10 +1,13 @@
 import { hash } from "bcrypt";
-import type { Request, Response } from "express";
+import type { NextFunction, Request, Response } from "express";
 import UserModel from "../database/schemas/user.js";
 import type { LoginDto, RegistrationDto } from "../dtos/auth.dto.js"; // this will be merges
 
-export const registrationHandler = async(req:Request<{}, {}, RegistrationDto>,res:Response)=>{
-    try {
+export const registrationHandler = async (
+  req: Request<{}, {}, RegistrationDto>,
+  res: Response
+) => {
+  try {
     const { email, password, name } = req.body;
 
     // 1. Check if user exists
@@ -25,19 +28,43 @@ export const registrationHandler = async(req:Request<{}, {}, RegistrationDto>,re
 
     // 4.Auto-login after register
     req.login(newUser, (err) => {
-      if (err) return res.status(500).json({ message: "Login after registration failed", err });
-      return res.status(201).json({ message: "Registered and logged in", user: newUser });
+      if (err)
+        return res
+          .status(500)
+          .json({ message: "Login after registration failed", err });
+      return res
+        .status(201)
+        .json({ message: "Registered and logged in", user: newUser });
     });
-
   } catch (error) {
     return res.status(500).json({ message: "Server error", error });
   }
-}
+};
 
-export const loginHandler = (req:Request<{}, {}, LoginDto>,res:Response)=>{
-    const { email, password } = req.body;
-    console.log("Login Attempt:", email, password);
-    res.send("Login successful");
-}
+export const loginHandler = (req: Request<{}, {}, LoginDto>, res: Response) => {
+  const { email, password } = req.body;
+  console.log("Login Attempt:", email, password);
+  res.send("Login successful");
+};
 
+export const logout = (req: Request, res: Response, next: NextFunction) => {
+  req.logout((err) => {
+    if (err) {
+      return next(err); // Handle any session destruction errors
+    }
 
+    // 2. Destroy the session (handled by express-session)
+    req.session.destroy((err) => {
+      if (err) {
+        console.error("Error destroying session:", err);
+        // Even if session destroy fails, we try to proceed with logout state
+      }
+
+      // 3. Clear the cookie (Optional but recommended for certainty)
+      res.clearCookie("connect.sid"); // Replace with your actual cookie name if different
+
+      // 4. Send success response
+      return res.status(200).json({ message: "Logout successful" });
+    });
+  });
+};
