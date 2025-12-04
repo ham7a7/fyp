@@ -2,7 +2,7 @@ import type mongoose from "mongoose";
 
 export interface IBotModel {
   _id: mongoose.Types.ObjectId;
-  onwerId: mongoose.Types.ObjectId;
+  ownerId: mongoose.Types.ObjectId;
   name: string;
   description: string;
   usecase: string;

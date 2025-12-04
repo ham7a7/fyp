@@ -16,3 +16,7 @@ export interface EditBotDto {
   botUsecase?: string;
   botLanguage?: string;
 }
+
+export interface RefreshKeyDto {
+  botId: string;
+}

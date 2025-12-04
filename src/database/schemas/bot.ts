@@ -4,7 +4,7 @@ import type { IBotModel } from "../../types/botModel.js";
 export const BotSchema: Schema<IBotModel> = new Schema(
   {
     name: { type: String, required: true },
-    onwerId: { type: mongoose.Types.ObjectId, required: true, ref: "User" },
+    ownerId: { type: mongoose.Types.ObjectId, required: true, ref: "User" },
     description: {
       type: String,
       required: true,

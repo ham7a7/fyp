@@ -50,7 +50,7 @@ export const createBotValidators: ValidationChain[] = [
   body("botLanguage").isString().withMessage("Bot language must be a string"),
 ];
 
-export const deleteBotValidators: ValidationChain[] = [
+export const botIdValidators: ValidationChain[] = [
   body("botId")
     .isString()
     .withMessage("Bot ID must be a string")
