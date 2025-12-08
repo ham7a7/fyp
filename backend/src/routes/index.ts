@@ -1,10 +1,13 @@
 import { Router } from "express";
+import { validateBotParam } from "../middlewares/validateBotParam.js";
+import { verifyAuth } from "../middlewares/verifyAuth.js";
 import auth from "./auth.js";
 import bot from "./bot.js";
+import intent from "./intent.js";
 
 const appRouter: Router = Router();
 appRouter.use("/api/auth", auth);
 appRouter.use("/api/bots", bot);
-appRouter.use("/api/intents", auth);
+appRouter.use("/api/bots/:botId/intents", verifyAuth, validateBotParam, intent);
 
 export default appRouter;

@@ -12,7 +12,7 @@ import { decrypt, encrypt, generateKey } from "../utils/cryptoUtils.js";
 
 export const createBot = async (
   req: Request<{}, {}, CreateBotDto>,
-  Res: Response
+  res: Response
 ) => {
   const { botName, botDescription, botUsecase, botLanguage } = req.body;
   try {
@@ -31,49 +31,49 @@ export const createBot = async (
       publicBotId: encryptedBotId,
     });
 
-    return Res.status(201).json({
+    return res.status(201).json({
       message: "Bot created successfully",
       bot: newBot,
       apiKey: decrypt(encryptedAPIKey),
       publicBotId: decrypt(encryptedBotId),
     });
   } catch (error) {
-    return Res.status(500).json({ message: "Server error", error });
+    return res.status(500).json({ message: "Server error", error });
   }
 };
 
 export const deleteBot = async (
   req: Request<{}, {}, DeleteBotDto>,
-  Res: Response
+  res: Response
 ) => {
   const { botId } = req.body;
   const ownerId = (req.user as any)._id;
   try {
     if (!mongoose.Types.ObjectId.isValid(botId)) {
-      return Res.status(400).json({ message: "Invalid Bot ID" });
+      return res.status(400).json({ message: "Invalid Bot ID" });
     }
     const bot = await BotModel.findOneAndDelete({
       _id: botId,
       ownerId: ownerId,
     });
     if (!bot) {
-      return Res.status(404).json({ message: "Bot not found" });
+      return res.status(404).json({ message: "Bot not found" });
     }
-    return Res.status(200).json({ message: "Bot deleted successfully" });
+    return res.status(200).json({ message: "Bot deleted successfully" });
   } catch (error) {
-    return Res.status(500).json({ message: "Server error", error });
+    return res.status(500).json({ message: "Server error", error });
   }
 };
 
 export const editBot = async (
   req: Request<{}, {}, EditBotDto>,
-  Res: Response
+  res: Response
 ) => {
   const { botId, botDescription, botName, botUsecase, botLanguage } = req.body;
   const ownerId = (req.user as any)._id;
   try {
     if (!mongoose.Types.ObjectId.isValid(botId)) {
-      return Res.status(400).json({ message: "Invalid Bot ID" });
+      return res.status(400).json({ message: "Invalid Bot ID" });
     }
     let updateObject: Record<string, any> = {
       name: botName,
@@ -97,15 +97,15 @@ export const editBot = async (
       }
     );
     if (!bot) {
-      return Res.status(404).json({ message: "Bot not found" });
+      return res.status(404).json({ message: "Bot not found" });
     }
 
-    return Res.status(200).json({
+    return res.status(200).json({
       message: "Bot updated successfully",
       updatedBot: bot,
     });
   } catch (error) {
-    return Res.status(500).json({ message: "Server error", error });
+    return res.status(500).json({ message: "Server error", error });
   }
 };
 
