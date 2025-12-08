@@ -17,6 +17,6 @@ export interface EditBotDto {
   botLanguage?: string;
 }
 
-export interface RefreshKeyDto {
+export interface BotIdDto {
   botId: string;
 }

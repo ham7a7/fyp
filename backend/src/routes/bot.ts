@@ -3,7 +3,9 @@ import {
   createBot,
   deleteBot,
   editBot,
+  getUserBot,
   getUserBots,
+  getUserBotWithParam,
   refreshAPIKey,
   refreshPublicBotId,
 } from "../handlers/bot.js";
@@ -19,7 +21,9 @@ const auth: Router = Router();
 auth.post("/create", verifyAuth, createBotValidators, validator, createBot);
 auth.delete("/delete", verifyAuth, botIdValidators, validator, deleteBot);
 auth.patch("/edit", verifyAuth, editBotValidators, validator, editBot);
+auth.post("/get-bot", verifyAuth, botIdValidators, validator, getUserBot);
 auth.get("/get-bots", verifyAuth, getUserBots);
+auth.get("/bot/:botId", verifyAuth, getUserBotWithParam);
 auth.patch(
   "/refresh-api-key",
   verifyAuth,

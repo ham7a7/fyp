@@ -2,10 +2,10 @@ import type { Request, Response } from "express";
 import mongoose from "mongoose";
 import BotModel from "../database/schemas/bot.js";
 import type {
+  BotIdDto,
   CreateBotDto,
   DeleteBotDto,
   EditBotDto,
-  RefreshKeyDto,
 } from "../dtos/bot.dto.js";
 import type { IBotModel } from "../types/botModel.js";
 import { decrypt, encrypt, generateKey } from "../utils/cryptoUtils.js";
@@ -47,11 +47,15 @@ export const deleteBot = async (
   Res: Response
 ) => {
   const { botId } = req.body;
+  const ownerId = (req.user as any)._id;
   try {
     if (!mongoose.Types.ObjectId.isValid(botId)) {
       return Res.status(400).json({ message: "Invalid Bot ID" });
     }
-    const bot = await BotModel.findByIdAndDelete(botId);
+    const bot = await BotModel.findOneAndDelete({
+      _id: botId,
+      ownerId: ownerId,
+    });
     if (!bot) {
       return Res.status(404).json({ message: "Bot not found" });
     }
@@ -66,6 +70,7 @@ export const editBot = async (
   Res: Response
 ) => {
   const { botId, botDescription, botName, botUsecase, botLanguage } = req.body;
+  const ownerId = (req.user as any)._id;
   try {
     if (!mongoose.Types.ObjectId.isValid(botId)) {
       return Res.status(400).json({ message: "Invalid Bot ID" });
@@ -84,9 +89,13 @@ export const editBot = async (
       )
     );
 
-    const bot = await BotModel.findByIdAndUpdate(botId, updateObject, {
-      new: true,
-    });
+    const bot = await BotModel.findOneAndUpdate(
+      { _id: botId, ownerId: ownerId },
+      updateObject,
+      {
+        new: true,
+      }
+    );
     if (!bot) {
       return Res.status(404).json({ message: "Bot not found" });
     }
@@ -97,6 +106,45 @@ export const editBot = async (
     });
   } catch (error) {
     return Res.status(500).json({ message: "Server error", error });
+  }
+};
+
+export const getUserBot = async (
+  req: Request<{}, {}, BotIdDto>,
+  res: Response
+) => {
+  try {
+    const { botId } = req.body;
+    const ownerId = (req.user as any)._id;
+    const bot: IBotModel | null = await BotModel.findOne({
+      _id: botId,
+      ownerId: ownerId,
+    });
+    if (!bot) {
+      return res.status(404).json({ message: "Bot not found" });
+    }
+    return res.status(200).json({ bot });
+  } catch (error) {
+    return res.status(500).json({ message: "Server error", error });
+  }
+};
+export const getUserBotWithParam = async (req: Request, res: Response) => {
+  try {
+    const { botId } = req.params;
+    if (!botId || !mongoose.Types.ObjectId.isValid(botId)) {
+      return res.status(400).json({ message: "Invalid Bot ID" });
+    }
+    const ownerId = (req.user as any)._id;
+    const bot: IBotModel | null = await BotModel.findOne({
+      _id: botId,
+      ownerId: ownerId,
+    });
+    if (!bot) {
+      return res.status(404).json({ message: "Bot not found" });
+    }
+    return res.status(200).json({ bot });
+  } catch (error) {
+    return res.status(500).json({ message: "Server error", error });
   }
 };
 
@@ -112,7 +160,7 @@ export const getUserBots = async (req: Request, res: Response) => {
 };
 
 export const refreshAPIKey = async (
-  req: Request<{}, {}, RefreshKeyDto>,
+  req: Request<{}, {}, BotIdDto>,
   res: Response
 ) => {
   const { botId } = req.body;
@@ -144,10 +192,11 @@ export const refreshAPIKey = async (
 };
 
 export const refreshPublicBotId = async (
-  req: Request<{}, {}, RefreshKeyDto>,
+  req: Request<{}, {}, BotIdDto>,
   res: Response
 ) => {
   const { botId } = req.body;
+  const ownerId = (req.user as any)._id;
   if (!mongoose.Types.ObjectId.isValid(botId)) {
     return res.status(400).json({ message: "Invalid Bot ID" });
   }
@@ -155,8 +204,8 @@ export const refreshPublicBotId = async (
     const newPublicBotId = generateKey(8);
     const encryptePublicBotId = encrypt(newPublicBotId);
 
-    const updatedBot = await BotModel.findByIdAndUpdate(
-      botId,
+    const updatedBot = await BotModel.findOneAndUpdate(
+      { _id: botId, ownerId: ownerId },
       { publicBotId: encryptePublicBotId },
       { new: true }
     );
