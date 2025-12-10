@@ -9,8 +9,8 @@ export interface IBotModel {
   language: string;
   status: string;
   origins?: string[];
-  //   intents: mongoose.Types.ObjectId[];
-  //   knowledgeBase: mongoose.Types.ObjectId;
+  // intents: mongoose.Types.ObjectId[];
+  // knowledgeBase: mongoose.Types.ObjectId[];
   //   widgetSettings: mongoose.Types.ObjectId;
   //   analytics: mongoose.Types.ObjectId;
   publicBotId: String; // used in widget.js example: data-bot-id="123xyz"

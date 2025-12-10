@@ -3,12 +3,12 @@ import { bucketName, storage } from "../gcs.config.js";
 // Function to upload the buffer to GCS
 export const uploadToGCS = async (
   file: Express.Multer.File,
-  userId: string,
+  gcsFolder: string,
   botId: string
-) => {
+): Promise<string> => {
   // 1. Define the GCS file path structure
   // We use the bot ID and a unique timestamp to organize uploads by user/bot
-  const fileName = `${userId}/${botId}/${Date.now()}-${file.originalname.replace(
+  const fileName = `${gcsFolder}/${botId}/${Date.now()}-${file.originalname.replace(
     / /g,
     "_"
   )}`;
