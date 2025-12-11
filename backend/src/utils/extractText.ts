@@ -16,7 +16,7 @@ export const bufferToText = async (
       // 2. PDF
       const data = new PDFParse({ data: bufferFile });
       const content = await data.getText();
-      textContent = content.text;
+      textContent = content.pages.map((page) => page.text).join("\n");
     } else if (
       mimeType.includes(
         "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
@@ -35,7 +35,6 @@ export const bufferToText = async (
       throw new Error(`Unsupported file type: ${mimeType}`);
     }
   } catch (error) {
-    console.error(`Error extracting text:`, error);
     throw new Error(`Failed to extract text from file.`);
   }
 
