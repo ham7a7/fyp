@@ -37,10 +37,5 @@ export const bufferToText = async (
   } catch (error) {
     throw new Error(`Failed to extract text from file.`);
   }
-
-  if (!textContent || textContent.trim().length === 0) {
-    throw new Error("Extracted text content is empty or invalid.");
-  }
-
   return textContent;
 };

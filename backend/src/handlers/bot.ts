@@ -3,12 +3,14 @@ import mongoose from "mongoose";
 import BotModel from "../database/schemas/bot.js";
 import type {
   BotIdDto,
+  ChatWithBotDto,
   CreateBotDto,
   DeleteBotDto,
   EditBotDto,
 } from "../dtos/bot.dto.js";
 import type { IBotModel } from "../types/botModel.js";
 import { decrypt, encrypt, generateKey } from "../utils/cryptoUtils.js";
+import { askQuestion } from "../utils/ragUtils.js";
 
 export const createBot = async (
   req: Request<{}, {}, CreateBotDto>,
@@ -19,7 +21,6 @@ export const createBot = async (
     const APIKey = generateKey(16);
     const encryptedAPIKey = encrypt(APIKey);
     const publicBotId = generateKey(8);
-    const encryptedBotId = encrypt(publicBotId);
 
     const newBot = await BotModel.create({
       name: botName,
@@ -28,14 +29,13 @@ export const createBot = async (
       usecase: botUsecase,
       language: botLanguage,
       apiKey: encryptedAPIKey,
-      publicBotId: encryptedBotId,
+      publicBotId: publicBotId,
     });
 
     return res.status(201).json({
       message: "Bot created successfully",
       bot: newBot,
       apiKey: decrypt(encryptedAPIKey),
-      publicBotId: decrypt(encryptedBotId),
     });
   } catch (error) {
     return res.status(500).json({ message: "Server error", error });
@@ -151,7 +151,13 @@ export const getUserBotWithParam = async (req: Request, res: Response) => {
 export const getUserBots = async (req: Request, res: Response) => {
   try {
     const ownerId = (req.user as any)._id;
-    const bots: IBotModel[] = await BotModel.find({ ownerId });
+    let bots: IBotModel[] = await BotModel.find({ ownerId });
+
+    bots = bots.map((bot) => {
+      bot.publicBotId = decrypt(bot.publicBotId.toString());
+      bot.apiKey = decrypt(bot.apiKey.toString());
+      return bot;
+    });
 
     return res.status(200).json({ bots });
   } catch (error) {
@@ -202,11 +208,10 @@ export const refreshPublicBotId = async (
   }
   try {
     const newPublicBotId = generateKey(8);
-    const encryptePublicBotId = encrypt(newPublicBotId);
 
     const updatedBot = await BotModel.findOneAndUpdate(
       { _id: botId, ownerId: ownerId },
-      { publicBotId: encryptePublicBotId },
+      { publicBotId: newPublicBotId },
       { new: true }
     );
 
@@ -217,9 +222,28 @@ export const refreshPublicBotId = async (
     return res.status(200).json({
       message: "Public bot id refreshed successfully",
       bot: updatedBot,
-      publicBotId: decrypt(encryptePublicBotId),
     });
   } catch (error) {
     return res.status(500).json({ message: "Server error", error });
+  }
+};
+
+export const chatWithBot = async (
+  req: Request<{}, {}, ChatWithBotDto>,
+  res: Response
+) => {
+  // TODO: Validate origin of the request
+  const { message, publicBotId } = req.body;
+  const bot = await BotModel.findOne({ publicBotId: publicBotId });
+  if (!bot) {
+    return res.status(404).json({ message: "Bot not found" });
+  }
+  const botId = bot._id.toString();
+
+  try {
+    const answer = await askQuestion(message, botId);
+    res.json({ response: answer });
+  } catch (error) {
+    res.status(500).json({ error });
   }
 };

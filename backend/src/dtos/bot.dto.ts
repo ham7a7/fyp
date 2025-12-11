@@ -20,3 +20,7 @@ export interface EditBotDto {
 export interface BotIdDto {
   botId: string;
 }
+export interface ChatWithBotDto {
+  publicBotId: string;
+  message: string;
+}

@@ -48,6 +48,14 @@ export const decrypt = (text: string): string => {
   return decrypted;
 };
 
+export const compareKeys = (
+  plainTextKey: string,
+  encryptedKey: string
+): boolean => {
+  const decryptedKey = decrypt(encryptedKey);
+  return plainTextKey === decryptedKey;
+};
+
 export const generateKey = (length: number): string => {
   return crypto.randomBytes(length).toString("hex");
 };

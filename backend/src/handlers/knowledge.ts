@@ -6,7 +6,7 @@ import { addDocumentToVectorDB } from "./../utils/ragUtils.js";
 
 export const save = async (req: Request, res: Response) => {
   try {
-    const botId = req.bot!._id.toString();
+    const botId = req.bot!._id;
     const ownerId: string = (req.user as any)._id;
 
     const file = req.file;
@@ -16,11 +16,21 @@ export const save = async (req: Request, res: Response) => {
     }
     const gcsFolder: string = "bots_data";
     // Upload File to GCS
-    const fileUrl: string = await uploadToGCS(file, gcsFolder, botId);
+    const fileUrl: string = await uploadToGCS(
+      file,
+      gcsFolder,
+      botId.toString()
+    );
     // Get file buffer
     const bufferFile: Buffer = file.buffer;
     // Convert buffer to text
     const text = await bufferToText(bufferFile, file.mimetype);
+    console.log(text);
+    if (text.trim().length === 0) {
+      return res
+        .status(400)
+        .json({ message: "Extracted text content is empty or invalid." });
+    }
 
     const knowledge = await KnowledgeModel.create({
       botId,
@@ -33,6 +43,7 @@ export const save = async (req: Request, res: Response) => {
 
     // Fields of the VDB
     const metadata: Record<string, any> = {
+      botId: botId.toString(),
       knowledgeId: knowledge._id,
     };
     // Create embeddings and save to Vector DB
