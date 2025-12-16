@@ -12,7 +12,7 @@ passport.serializeUser((user: any, done) => {
 // Deserialize: Read ID from cookie and find user
 passport.deserializeUser(async (id, done) => {
   try {
-    const user = await UserModel.findById(id);
+    const user: IUserModel | null = await UserModel.findById(id);
     if (!user) throw new Error("User not found");
     done(null, user);
   } catch (err: any) {
