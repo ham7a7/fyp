@@ -143,6 +143,28 @@ export default function BotDetail({ botId }: BotDetailProps) {
         </div>
       )}
 
+      {/* Quick Actions */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <button
+          onClick={() => router.push(`/dashboard/bots/${botId}/intents`)}
+          className="p-4 bg-blue-50 border-2 border-blue-200 rounded-lg hover:bg-blue-100 transition-colors text-left"
+        >
+          <h4 className="font-semibold text-blue-900 mb-1">Manage Intents</h4>
+          <p className="text-sm text-blue-700">
+            Train your bot to understand user queries
+          </p>
+        </button>
+        <button
+          onClick={() => router.push(`/dashboard/bots/${botId}/knowledge`)}
+          className="p-4 bg-green-50 border-2 border-green-200 rounded-lg hover:bg-green-100 transition-colors text-left"
+        >
+          <h4 className="font-semibold text-green-900 mb-1">Knowledge Base</h4>
+          <p className="text-sm text-green-700">
+            Upload documents and data for your bot
+          </p>
+        </button>
+      </div>
+
       {/* Basic Information */}
       <div className="bg-white rounded-lg shadow p-6 space-y-4">
         <h3 className="text-xl font-semibold text-gray-900 mb-4">Basic Information</h3>
