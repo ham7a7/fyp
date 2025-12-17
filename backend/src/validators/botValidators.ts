@@ -14,8 +14,8 @@ export const createBotValidators: ValidationChain[] = [
   body("botUsecase")
     .isString()
     .withMessage("Usecase must be a string")
-    .isIn(["Website", "Mobile App", "Other"])
-    .withMessage("Usecase must be one of Website, Mobile App, Other"),
+    .notEmpty()
+    .withMessage("Usecase must not be empty"),
   body("botLanguage").isString().withMessage("Bot language must be a string"),
 ];
 
@@ -48,9 +48,8 @@ export const editBotValidators: ValidationChain[] = [
   body("botUsecase")
     .optional({ values: "null" })
     .isString()
-    .withMessage("Usecase must be a string")
-    .isIn(["Website", "Mobile App", "Other"])
-    .withMessage("Usecase must be one of Website, Mobile App, Other"),
+    .notEmpty()
+    .withMessage("Usecase must not be empty"),
   body("botLanguage")
     .optional({ values: "null" })
     .isString()

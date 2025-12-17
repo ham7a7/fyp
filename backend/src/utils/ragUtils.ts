@@ -1,6 +1,6 @@
 import { MongoDBAtlasVectorSearch } from "@langchain/mongodb";
 import { ChatOpenAI, OpenAIEmbeddings } from "@langchain/openai";
-import { RecursiveCharacterTextSplitter } from "@langchain/textSplitters";
+import { RecursiveCharacterTextSplitter } from "@langchain/textsplitters";
 import { config } from "dotenv";
 import { mongoose } from "../database/db.js";
 import KnowledgeVectorModel from "../database/schemas/knowledgeVector.js";

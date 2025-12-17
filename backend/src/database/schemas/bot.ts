@@ -11,7 +11,7 @@ export const BotSchema: Schema<IBotModel> = new Schema(
     },
     usecase: {
       type: String,
-      enum: ["Website", "Mobile App", "Other"],
+      // enum: ["Website", "Mobile App", "Other"],
       required: true,
     },
     language: { type: String, required: true },

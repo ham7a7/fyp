@@ -154,11 +154,9 @@ export const getUserBots = async (req: Request, res: Response) => {
     let bots: IBotModel[] = await BotModel.find({ ownerId });
 
     bots = bots.map((bot) => {
-      bot.publicBotId = decrypt(bot.publicBotId.toString());
       bot.apiKey = decrypt(bot.apiKey.toString());
       return bot;
     });
-
     return res.status(200).json({ bots });
   } catch (error) {
     return res.status(500).json({ message: "Server error", error });
