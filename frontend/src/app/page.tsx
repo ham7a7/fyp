@@ -25,7 +25,10 @@ export default function Home() {
           </div>
         </div>
       </nav>
-
+      <script
+  src="http://localhost:3000/widget.js"
+  data-bot-id="eefd9f672de0c27a">
+</script>
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
         <div className="text-center">
           <h1 className="text-5xl font-bold text-gray-900 mb-6">

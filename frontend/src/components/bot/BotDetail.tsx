@@ -144,7 +144,7 @@ export default function BotDetail({ botId }: BotDetailProps) {
       )}
 
       {/* Quick Actions */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <button
           onClick={() => router.push(`/dashboard/bots/${botId}/intents`)}
           className="p-4 bg-blue-50 border-2 border-blue-200 rounded-lg hover:bg-blue-100 transition-colors text-left"
@@ -161,6 +161,15 @@ export default function BotDetail({ botId }: BotDetailProps) {
           <h4 className="font-semibold text-green-900 mb-1">Knowledge Base</h4>
           <p className="text-sm text-green-700">
             Upload documents and data for your bot
+          </p>
+        </button>
+        <button
+          onClick={() => router.push(`/dashboard/bots/${botId}/integration`)}
+          className="p-4 bg-purple-50 border-2 border-purple-200 rounded-lg hover:bg-purple-100 transition-colors text-left"
+        >
+          <h4 className="font-semibold text-purple-900 mb-1">Integration & API</h4>
+          <p className="text-sm text-purple-700">
+            Get widget code and API credentials
           </p>
         </button>
       </div>
