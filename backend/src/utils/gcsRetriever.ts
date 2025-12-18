@@ -23,3 +23,17 @@ export const getSignedUrl = async (gcsPath: string): Promise<string> => {
 
   return url;
 };
+
+export const deleteFromGCS = async (fileName: string): Promise<void> => {
+    try {
+        await storage.bucket(bucketName).file(fileName).delete();
+        console.log(`Successfully deleted ${fileName} from GCS.`);
+    } catch (error: any) {
+        // Handle the case where the file might have already been deleted
+        if (error.code === 404) {
+            console.warn(`File ${fileName} not found in GCS, skipping deletion.`);
+        } else {
+            throw error;
+        }
+    }
+};
