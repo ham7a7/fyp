@@ -4,6 +4,8 @@ import { RecursiveCharacterTextSplitter } from "@langchain/textsplitters";
 import { config } from "dotenv";
 import { mongoose } from "../database/db.js";
 import KnowledgeVectorModel from "../database/schemas/knowledgeVector.js";
+import type { IBotModel } from "../types/botModel.js";
+import type { IIntentModel } from "../types/intentModel.js";
 config();
 
 // Initialize the Vector Store
@@ -45,7 +47,8 @@ export const addDocumentToVectorDB = async (
   }
 };
 
-export const askQuestion = async (query: string, botId: string) => {
+export const askQuestion = async (query: string, bot:IBotModel, intents:IIntentModel[]| null) => {
+  const botId = bot._id.toString();
   try {
     const vectorStore = getVectorStore();
     const llm = new ChatOpenAI({ modelName: "gpt-4o" });
@@ -67,11 +70,18 @@ export const askQuestion = async (query: string, botId: string) => {
 
     // Construct context from retrieved documents
     const context = relevantDocs.map((d) => d.pageContent).join("\n\n");
-    const systemPrompt = `You are a helpful AI assistant. Use the following context to answer the user's question. If the answer is not in the context, say you don't know.
+    const systemPrompt = `You are a helpful AI assistant. Use the following intents and context to answer the user's question. If the answer is not in the context, say you don't know.
   
-  Context:
-  ${context}`;
+  Intents:
+    If the user query matches one of the intent training phrases take answer from the intent intent responses.
+  ${intents && intents.length > 0 ? intents.map(intent => `- Name: ${intent.name}: - Training Phrases: ${intent.trainingPhrases} - Responses: ${intent.responses}`) : ''}
 
+  Context:
+  ${context}
+  
+  `;
+
+  console.log("System Prompt:", systemPrompt);
     // Invoke LLM with context
     const response = await llm.invoke([
       { role: "system", content: systemPrompt },

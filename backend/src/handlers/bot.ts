@@ -1,6 +1,7 @@
 import type { Request, Response } from "express";
 import mongoose from "mongoose";
 import BotModel from "../database/schemas/bot.js";
+import IntentModel from "../database/schemas/intent.js";
 import type {
   BotIdDto,
   ChatWithBotDto,
@@ -9,6 +10,7 @@ import type {
   EditBotDto,
 } from "../dtos/bot.dto.js";
 import type { IBotModel } from "../types/botModel.js";
+import type { IIntentModel } from "../types/intentModel.js";
 import { decrypt, encrypt, generateKey } from "../utils/cryptoUtils.js";
 import { askQuestion } from "../utils/ragUtils.js";
 
@@ -236,9 +238,10 @@ export const chatWithBot = async (
   if (!bot) {
     return res.status(404).json({ message: "Bot not found" });
   }
-  const botId = bot._id.toString();
+
+  const intents: IIntentModel[] | null= await IntentModel.find({ botId: bot._id, ownerId: bot.ownerId });
   try {
-    const answer = await askQuestion(message, botId);
+    const answer = await askQuestion(message, bot, intents);
     console.log("Answer:", answer);
     res.json({ response: answer });
   } catch (error) {
