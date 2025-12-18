@@ -20,14 +20,16 @@ export const save = async (req: Request, res: Response) => {
     }
         // Get file buffer
     const bufferFile: Buffer = file.buffer;
+    console.log("File buffer received, size:", bufferFile.length);
     // Convert buffer to text
     const text = await bufferToText(bufferFile, file.mimetype);
+
     if (text.trim().length === 0) {
       return res
         .status(400)
         .json({ message: "Extracted text content is empty or invalid." });
     }
-
+    console.log("Extracted Text Content:", text);
     const gcsFolder: string = process.env.GCS_FOLDER_NAME!;
     // Upload File to GCS
     const fileUrl: string = await uploadToGCS(
@@ -57,6 +59,7 @@ export const save = async (req: Request, res: Response) => {
       knowledge: knowledge,
     });
   } catch (error: any) {
+    console.error("Error in saving knowledge:", error);
     return res.status(500).json({ message: "Server error", error });
   }
 };

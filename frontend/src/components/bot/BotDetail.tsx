@@ -192,12 +192,24 @@ export default function BotDetail({ botId }: BotDetailProps) {
             <label className="block text-sm font-medium text-gray-700">Language</label>
             <p className="mt-1 text-gray-900">{bot.language}</p>
           </div>
+           <div>
+            <label className="block text-sm font-medium text-gray-700">Created At</label>
+            <p className="mt-1 text-sm text-gray-600">
+              {new Date(bot.createdAt).toLocaleString()}
+            </p>
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700">Updated At</label>
+            <p className="mt-1 text-sm text-gray-600">
+              {new Date(bot.updatedAt).toLocaleString()}
+            </p>
+          </div>
         </div>
 
         <div>
           <label className="block text-sm font-medium text-gray-700">Status</label>
           <span className={`inline-block mt-1 px-3 py-1 rounded-full text-sm ${
-            bot.status === 'active' ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'
+            bot.status === 'Active' ? 'bg-green-100 text-green-800' : 'bg-red-300 text-gray-800'
           }`}>
             {bot.status}
           </span>
@@ -205,7 +217,7 @@ export default function BotDetail({ botId }: BotDetailProps) {
       </div>
 
       {/* API Credentials */}
-      <div className="bg-white rounded-lg shadow p-6 space-y-4">
+      {/* <div className="bg-white rounded-lg shadow p-6 space-y-4">
         <h3 className="text-xl font-semibold text-gray-900 mb-4">API Credentials</h3>
 
         <div>
@@ -261,10 +273,10 @@ export default function BotDetail({ botId }: BotDetailProps) {
             Use this key for mobile and backend integrations (x-api-key header)
           </p>
         </div>
-      </div>
+      </div> */}
 
       {/* Metadata */}
-      <div className="bg-white rounded-lg shadow p-6 space-y-4">
+      {/* <div className="bg-white rounded-lg shadow p-6 space-y-4">
         <h3 className="text-xl font-semibold text-gray-900 mb-4">Metadata</h3>
 
         <div className="grid grid-cols-2 gap-4">
@@ -276,20 +288,9 @@ export default function BotDetail({ botId }: BotDetailProps) {
             <label className="block text-sm font-medium text-gray-700">Owner ID</label>
             <p className="mt-1 text-sm text-gray-600 break-all">{bot.ownerId}</p>
           </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-700">Created At</label>
-            <p className="mt-1 text-sm text-gray-600">
-              {new Date(bot.createdAt).toLocaleString()}
-            </p>
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-700">Updated At</label>
-            <p className="mt-1 text-sm text-gray-600">
-              {new Date(bot.updatedAt).toLocaleString()}
-            </p>
-          </div>
+         
         </div>
-      </div>
+      </div> */}
 
       <div className="flex justify-center">
         <button

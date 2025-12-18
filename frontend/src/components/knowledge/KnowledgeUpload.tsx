@@ -22,6 +22,11 @@ export default function KnowledgeUpload({ botId, onUploadSuccess }: KnowledgeUpl
     'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
     'text/plain',
     'text/csv',
+    'image/jpeg',
+    'image/jpg',
+    'image/png',
+    'image/gif',
+    'image/webp',
   ];
 
   const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
@@ -52,7 +57,7 @@ export default function KnowledgeUpload({ botId, onUploadSuccess }: KnowledgeUpl
 
     // Validate file type
     if (!ACCEPTED_FILE_TYPES.includes(selectedFile.type)) {
-      setError('Invalid file type. Please upload PDF, DOC, DOCX, TXT, or CSV files.');
+      setError('Invalid file type. Please upload PDF, DOC, DOCX, TXT, CSV, or image files (JPEG, PNG, GIF, WebP).');
       return;
     }
 
@@ -115,7 +120,7 @@ export default function KnowledgeUpload({ botId, onUploadSuccess }: KnowledgeUpl
       <div>
         <h3 className="text-xl font-semibold text-gray-900 mb-2">Upload Knowledge Document</h3>
         <p className="text-sm text-gray-600">
-          Upload documents to train your bot. Supported formats: PDF, DOC, DOCX, TXT, CSV (Max 10MB)
+          Upload documents and images to train your bot. Supported formats: PDF, DOC, DOCX, TXT, CSV, Images (JPEG, PNG, GIF, WebP) • Max 10MB
         </p>
       </div>
 
@@ -147,7 +152,7 @@ export default function KnowledgeUpload({ botId, onUploadSuccess }: KnowledgeUpl
           id="file-input"
           type="file"
           onChange={handleFileInput}
-          accept=".pdf,.doc,.docx,.txt,.csv"
+          accept=".pdf,.doc,.docx,.txt,.csv,.jpg,.jpeg,.png,.gif,.webp"
           className="hidden"
           disabled={uploading}
         />
@@ -221,7 +226,7 @@ export default function KnowledgeUpload({ botId, onUploadSuccess }: KnowledgeUpl
           )}
 
           <p className="text-xs text-gray-500">
-            Supported: PDF, DOC, DOCX, TXT, CSV • Max size: 10MB
+            Supported: PDF, DOC, DOCX, TXT, CSV, JPEG, PNG, GIF, WebP • Max size: 10MB
           </p>
         </div>
       </div>

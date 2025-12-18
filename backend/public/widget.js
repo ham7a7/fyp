@@ -319,6 +319,7 @@
       flex: 1;
       border: 1px solid #d1d5db;
       border-radius: 24px;
+      color: black;
       padding: 12px 16px;
       font-size: 14px;
       outline: none;
@@ -557,7 +558,7 @@
       console.log("Bot response data:", data.response);
         setTyping(false);
         addMessage(data.response);
-        
+
 
     } catch (error) {
       setTyping(false);

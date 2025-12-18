@@ -12,8 +12,6 @@ export default function CreateBotForm() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
-  const [showApiKey, setShowApiKey] = useState(false);
-  const [apiKey, setApiKey] = useState('');
 
   const [formData, setFormData] = useState<CreateBotDto>({
     botName: '',
@@ -38,9 +36,6 @@ export default function CreateBotForm() {
     try {
       const response = await botService.createBot(formData);
       setSuccessMessage(response.message);
-      setApiKey(response.apiKey);
-      setShowApiKey(true);
-      
       // Redirect after showing success
       setTimeout(() => {
         router.push('/dashboard/bots');
@@ -50,11 +45,6 @@ export default function CreateBotForm() {
     } finally {
       setLoading(false);
     }
-  };
-
-  const copyApiKey = () => {
-    navigator.clipboard.writeText(apiKey);
-    alert('API Key copied to clipboard!');
   };
 
   return (
@@ -70,26 +60,6 @@ export default function CreateBotForm() {
       {successMessage && (
         <div className="bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded mb-4">
           {successMessage}
-        </div>
-      )}
-
-      {showApiKey && apiKey && (
-        <div className="bg-blue-50 border border-blue-200 px-4 py-3 rounded mb-4">
-          <p className="text-blue-900 font-semibold mb-2">⚠️ Important: Save your API Key</p>
-          <p className="text-blue-800 text-sm mb-2">
-            This is the only time you'll see this API key. Make sure to copy and save it securely.
-          </p>
-          <div className="flex gap-2 items-center">
-            <code className="flex-1 bg-white px-3 py-2 rounded border border-blue-300 text-sm break-all">
-              {apiKey}
-            </code>
-            <button
-              onClick={copyApiKey}
-              className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 whitespace-nowrap"
-            >
-              Copy
-            </button>
-          </div>
         </div>
       )}
 
@@ -121,7 +91,7 @@ export default function CreateBotForm() {
             onChange={handleChange}
             placeholder="Describe what your bot does"
             rows={4}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full px-3 py-2 border text-gray-700 placeholder:text-gray-400 border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
         </div>
 
@@ -150,7 +120,7 @@ export default function CreateBotForm() {
             value={formData.botLanguage}
             onChange={handleChange}
             required
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full px-3 py-2 border border-gray-300 placeholder:text-gray-400 text-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
           >
             <option value="English">English</option>
             <option value="Spanish">Spanish</option>
