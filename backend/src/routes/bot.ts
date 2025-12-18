@@ -43,7 +43,6 @@ auth.patch(
 
 auth.post(
   "/chat-with-bot",
-  verifyAuth,
   chatWithBotValidators,
   validator,
   chatWithBot

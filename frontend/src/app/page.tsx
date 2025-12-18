@@ -20,6 +20,7 @@ export default function Home() {
               >
                 Register
               </Link>
+
             </div>
           </div>
         </div>

@@ -22,7 +22,6 @@ export const save = async (req: Request, res: Response) => {
     const bufferFile: Buffer = file.buffer;
     // Convert buffer to text
     const text = await bufferToText(bufferFile, file.mimetype);
-    console.log(text);
     if (text.trim().length === 0) {
       return res
         .status(400)

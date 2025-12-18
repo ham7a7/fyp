@@ -5,17 +5,26 @@ import { config } from "dotenv";
 import express from "express";
 import session from "express-session";
 import passport from "passport";
+
+import path, { dirname } from "path";
+import { fileURLToPath } from 'url';
 import { connectToDb } from "./database/db.js";
 import "./passport.js";
 import appRouter from "./routes/index.js";
+
+// Now you can use __dirname as you would in a CommonJS module
 
 config();
 
 const app = express();
 const PORT = process.env.PORT;
 const ONE_DAY: number = 1000 * 60 * 60 * 24;
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 
 app.use(express.json());
+app.use(express.static(path.join(__dirname, "../public")));
+
 // CORS configuration
 app.use(
   cors({

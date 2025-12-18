@@ -237,9 +237,9 @@ export const chatWithBot = async (
     return res.status(404).json({ message: "Bot not found" });
   }
   const botId = bot._id.toString();
-
   try {
     const answer = await askQuestion(message, botId);
+    console.log("Answer:", answer);
     res.json({ response: answer });
   } catch (error) {
     res.status(500).json({ error });
