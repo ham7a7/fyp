@@ -11,11 +11,11 @@ config();
 // Initialize the Vector Store
 const getVectorStore = () => {
   const embeddings = new OpenAIEmbeddings({
-    modelName: "text-embedding-3-small", // or "text-embedding-ada-002"
+    modelName: "text-embedding-3-small",
     apiKey: process.env.OPENAI_API_KEY!,
   });
   const collection = mongoose.connection.db!.collection(
-    KnowledgeVectorModel.collection.name
+    KnowledgeVectorModel.collection.name,
   );
 
   return new MongoDBAtlasVectorSearch(embeddings, {
@@ -29,7 +29,7 @@ const getVectorStore = () => {
 // Ingestion: Split text and save vectors
 export const addDocumentToVectorDB = async (
   text: string,
-  metadata: Record<string, any> = {}
+  metadata: Record<string, any> = {},
 ) => {
   try {
     // Split text into chunks
@@ -47,7 +47,11 @@ export const addDocumentToVectorDB = async (
   }
 };
 
-export const askQuestion = async (query: string, bot:IBotModel, intents:IIntentModel[]| null) => {
+export const askQuestion = async (
+  query: string,
+  bot: IBotModel,
+  intents: IIntentModel[] | null,
+) => {
   const botId = bot._id.toString();
   try {
     const vectorStore = getVectorStore();
@@ -64,24 +68,21 @@ export const askQuestion = async (query: string, bot:IBotModel, intents:IIntentM
       searchType: "similarity",
       filter: filter,
     });
-
     // Retrieve relevant documents
     const relevantDocs = await retriever.invoke(query);
-
     // Construct context from retrieved documents
     const context = relevantDocs.map((d) => d.pageContent).join("\n\n");
-    const systemPrompt = `You are a helpful AI assistant. Use the following intents and context to answer the user's question. If the answer is not in the context, say you don't know.
+    const systemPrompt = `You are a helpful AI assistant. Use the following intents and context to answer the user's question. If the answer is not in intents or the context, say you don't know.
   
   Intents:
-    If the user query matches one of the intent training phrases take answer from the intent intent responses.
-  ${intents && intents.length > 0 ? intents.map(intent => `- Name: ${intent.name}: - Training Phrases: ${intent.trainingPhrases} - Responses: ${intent.responses}`) : ''}
+    If the user query matches one of the intent training phrases take answer from the intent responses.
+  ${intents && intents.length > 0 ? intents.map((intent) => `- Name: ${intent.name}: - Training Phrases: ${intent.trainingPhrases} - Responses: ${intent.responses}`) : ""}
 
   Context:
   ${context}
   
   `;
 
-  console.log("System Prompt:", systemPrompt);
     // Invoke LLM with context
     const response = await llm.invoke([
       { role: "system", content: systemPrompt },

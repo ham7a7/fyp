@@ -25,7 +25,7 @@ export default function Home() {
           </div>
         </div>
       </nav>
-   <script
+<script
   src="http://localhost:3000/widget.js"
   data-bot-id="d7f314fff2446683">
 </script>
