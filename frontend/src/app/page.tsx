@@ -24,11 +24,7 @@ export default function Home() {
             </div>
           </div>
         </div>
-      </nav>
-   <script
-  src="http://localhost:3000/widget.js"
-  data-bot-id="d7f314fff2446683">
-</script>
+      </nav>  
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
         <div className="text-center">
           <h1 className="text-5xl font-bold text-gray-900 mb-6">
@@ -53,7 +49,10 @@ export default function Home() {
               Sign In
             </Link>
           </div>
-
+<script
+  src="http://localhost:3000/widget.js"
+  data-bot-id="464f3be962845381">
+</script>
           <div className="mt-20 grid grid-cols-1 md:grid-cols-3 gap-8">
             <div className="bg-white p-6 rounded-lg shadow-md">
               <div className="text-3xl mb-4">🤖</div>

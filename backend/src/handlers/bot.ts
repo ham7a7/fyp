@@ -16,7 +16,7 @@ import { askQuestion } from "../utils/ragUtils.js";
 
 export const createBot = async (
   req: Request<{}, {}, CreateBotDto>,
-  res: Response
+  res: Response,
 ) => {
   const { botName, botDescription, botUsecase, botLanguage } = req.body;
   try {
@@ -46,7 +46,7 @@ export const createBot = async (
 
 export const deleteBot = async (
   req: Request<{}, {}, DeleteBotDto>,
-  res: Response
+  res: Response,
 ) => {
   const { botId } = req.body;
   const ownerId = (req.user as any)._id;
@@ -69,7 +69,7 @@ export const deleteBot = async (
 
 export const editBot = async (
   req: Request<{}, {}, EditBotDto>,
-  res: Response
+  res: Response,
 ) => {
   const { botId, botDescription, botName, botUsecase, botLanguage } = req.body;
   const ownerId = (req.user as any)._id;
@@ -87,8 +87,8 @@ export const editBot = async (
     // remove properties with null or undefined values
     updateObject = Object.fromEntries(
       Object.entries(updateObject).filter(
-        ([, value]) => value !== null && value !== undefined
-      )
+        ([, value]) => value !== null && value !== undefined,
+      ),
     );
 
     const bot = await BotModel.findOneAndUpdate(
@@ -96,7 +96,7 @@ export const editBot = async (
       updateObject,
       {
         new: true,
-      }
+      },
     );
     if (!bot) {
       return res.status(404).json({ message: "Bot not found" });
@@ -113,7 +113,7 @@ export const editBot = async (
 
 export const getUserBot = async (
   req: Request<{}, {}, BotIdDto>,
-  res: Response
+  res: Response,
 ) => {
   try {
     const { botId } = req.body;
@@ -167,7 +167,7 @@ export const getUserBots = async (req: Request, res: Response) => {
 
 export const refreshAPIKey = async (
   req: Request<{}, {}, BotIdDto>,
-  res: Response
+  res: Response,
 ) => {
   const { botId } = req.body;
   if (!mongoose.Types.ObjectId.isValid(botId)) {
@@ -180,7 +180,7 @@ export const refreshAPIKey = async (
     const updatedBot = await BotModel.findByIdAndUpdate(
       botId,
       { apiKey: encryptedAPIKey },
-      { new: true }
+      { new: true },
     );
 
     if (!updatedBot) {
@@ -199,7 +199,7 @@ export const refreshAPIKey = async (
 
 export const refreshPublicBotId = async (
   req: Request<{}, {}, BotIdDto>,
-  res: Response
+  res: Response,
 ) => {
   const { botId } = req.body;
   const ownerId = (req.user as any)._id;
@@ -212,7 +212,7 @@ export const refreshPublicBotId = async (
     const updatedBot = await BotModel.findOneAndUpdate(
       { _id: botId, ownerId: ownerId },
       { publicBotId: newPublicBotId },
-      { new: true }
+      { new: true },
     );
 
     if (!updatedBot) {
@@ -230,7 +230,7 @@ export const refreshPublicBotId = async (
 
 export const chatWithBot = async (
   req: Request<{}, {}, ChatWithBotDto>,
-  res: Response
+  res: Response,
 ) => {
   // TODO: Validate origin of the request
   const { message, publicBotId } = req.body;
@@ -239,7 +239,10 @@ export const chatWithBot = async (
     return res.status(404).json({ message: "Bot not found" });
   }
 
-  const intents: IIntentModel[] | null= await IntentModel.find({ botId: bot._id, ownerId: bot.ownerId });
+  const intents: IIntentModel[] | null = await IntentModel.find({
+    botId: bot._id,
+    ownerId: bot.ownerId,
+  });
   try {
     const answer = await askQuestion(message, bot, intents);
     console.log("Answer:", answer);

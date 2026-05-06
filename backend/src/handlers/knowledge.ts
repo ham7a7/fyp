@@ -18,7 +18,7 @@ export const save = async (req: Request, res: Response) => {
     if (!file) {
       return res.status(400).json({ message: "No file provided." });
     }
-        // Get file buffer
+    // Get file buffer
     const bufferFile: Buffer = file.buffer;
     console.log("File buffer received, size:", bufferFile.length);
     // Convert buffer to text
@@ -29,13 +29,19 @@ export const save = async (req: Request, res: Response) => {
         .status(400)
         .json({ message: "Extracted text content is empty or invalid." });
     }
+    if (text === "Unsupported") {
+      return res
+        .status(400)
+        .json({ message: "Unsupported file type. Unable to extract text." });
+    }
     console.log("Extracted Text Content:", text);
-    const gcsFolder: string = process.env.GCS_FOLDER_NAME!;
+    const gcsFolder: string = process.env.GCP_FOLDER_NAME!;
+    console.log("GCS Folder:", gcsFolder);
     // Upload File to GCS
     const fileUrl: string = await uploadToGCS(
       file,
       gcsFolder,
-      botId.toString()
+      botId.toString(),
     );
 
     const knowledge = await KnowledgeModel.create({
@@ -59,7 +65,6 @@ export const save = async (req: Request, res: Response) => {
       knowledge: knowledge,
     });
   } catch (error: any) {
-    console.error("Error in saving knowledge:", error);
     return res.status(500).json({ message: "Server error", error });
   }
 };
@@ -77,14 +82,14 @@ export const getAllDocuments = async (req: Request, res: Response) => {
   } catch (error: any) {
     return res.status(500).json({ message: "Server error", error });
   }
-}
+};
 
 export const deleteDocument = async (req: Request, res: Response) => {
   try {
     const botId = req.bot!._id;
     const ownerId = (req.user as any)._id;
     const knowledgeId = req.params.knowledgeId;
-    if(!knowledgeId || !mongoose.Types.ObjectId.isValid(knowledgeId)){
+    if (!knowledgeId || !mongoose.Types.ObjectId.isValid(knowledgeId)) {
       return res.status(400).json({ message: "Invalid knowledge ID" });
     }
     const document = await KnowledgeModel.findOneAndDelete({
@@ -101,8 +106,8 @@ export const deleteDocument = async (req: Request, res: Response) => {
       botId: botId.toString(),
     });
 
-const baseUrl = `https://storage.googleapis.com/${bucketName}/`;
-const filePath = document.fileUrl.replace(baseUrl, '');
+    const baseUrl = `https://storage.googleapis.com/${bucketName}/`;
+    const filePath = document.fileUrl.replace(baseUrl, "");
     await deleteFromGCS(filePath);
 
     return res
@@ -111,5 +116,4 @@ const filePath = document.fileUrl.replace(baseUrl, '');
   } catch (error: any) {
     return res.status(500).json({ message: "Server error", error });
   }
-}
-
+};
