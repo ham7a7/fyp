@@ -1,5 +1,6 @@
 import { Router } from "express";
 import {
+  chatWithBot,
   createBot,
   deleteBot,
   editBot,
@@ -13,9 +14,10 @@ import validator from "../middlewares/validator.js";
 import { verifyAuth } from "../middlewares/verifyAuth.js";
 import {
   botIdValidators,
+  chatWithBotValidators,
   createBotValidators,
   editBotValidators,
-} from "../validators/authValidators.js";
+} from "../validators/botValidators.js";
 
 const auth: Router = Router();
 auth.post("/create", verifyAuth, createBotValidators, validator, createBot);
@@ -37,6 +39,13 @@ auth.patch(
   botIdValidators,
   validator,
   refreshPublicBotId
+);
+
+auth.post(
+  "/chat-with-bot",
+  chatWithBotValidators,
+  validator,
+  chatWithBot
 );
 
 export default auth;

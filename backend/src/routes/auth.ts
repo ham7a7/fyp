@@ -1,6 +1,11 @@
 import { Router } from "express";
 import passport from "passport";
-import { loginHandler, logout, registrationHandler } from "../handlers/auth.js";
+import {
+  getCurrentUser,
+  loginHandler,
+  logout,
+  registrationHandler,
+} from "../handlers/auth.js";
 import validator from "../middlewares/validator.js";
 import {
   loginValidators,
@@ -17,5 +22,6 @@ auth.post(
   loginHandler
 );
 auth.post("/logout", logout);
+auth.get("/me", getCurrentUser);
 
 export default auth;

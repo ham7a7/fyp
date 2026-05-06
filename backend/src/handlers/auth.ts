@@ -9,6 +9,7 @@ export const registrationHandler = async (
 ) => {
   try {
     const { email, password, name } = req.body;
+    console.log("Registration attempt for:", email, password, name);
 
     // 1. Check if user exists
     const existingUser = await UserModel.findOne({ email });
@@ -42,9 +43,35 @@ export const registrationHandler = async (
 };
 
 export const loginHandler = (req: Request<{}, {}, LoginDto>, res: Response) => {
-  const { email, password } = req.body;
-  console.log("Login Attempt:", email, password);
-  res.send("Login successful");
+  const user = req.user;
+  if (!user) {
+    return res.status(401).json({ message: "Authentication failed" });
+  }
+  console.log("Login successful for:", user);
+  return res.status(200).json({
+    message: "Login successful",
+    user: user,
+    // {
+    //   _id: user._id,
+    //   email: user.email,
+    //   name: user.name,
+    // },
+  });
+};
+
+export const getCurrentUser = (req: Request, res: Response) => {
+  if (!req.user) {
+    return res.status(401).json({ message: "Not authenticated" });
+  }
+  const user = req.user;
+  return res.status(200).json({
+    user: user,
+    // {
+    //   _id: user._id,
+    //   email: user.email,
+    //   name: user.name,
+    // },
+  });
 };
 
 export const logout = (req: Request, res: Response, next: NextFunction) => {

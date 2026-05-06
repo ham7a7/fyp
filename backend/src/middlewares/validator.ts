@@ -5,6 +5,7 @@ export default function validator(req:Request, res:Response, next:NextFunction) 
     const validate = validationResult(req);
     if (!validate.isEmpty()) {
         // Stop the request here if there are errors
+        console.log("Validation errors:", validate.array());
         return res.status(400).json({ errors: validate.array() });
     }
     next();
