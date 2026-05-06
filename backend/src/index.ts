@@ -42,8 +42,8 @@ app.use(
       return callback(null, true);
     },
     credentials: true,
-    methods: ["GET", "POST", "OPTIONS"],
-    allowedHeaders: ["Content-Type", "X-API-Key"],
+    methods: ["GET", "POST", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "X-API-Key", "Authorization"],
   }),
 );
 app.use(cookieParser(process.env.COOKIE_SECRET));
