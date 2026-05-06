@@ -45,6 +45,10 @@ class ApiClient {
         if (error.response) {
           // Server responded with error status
           const message = error.response.data?.message || 'An error occurred';
+          console.error('❌ API Error Response:', {
+            status: error.response.status,
+            data: error.response.data,
+          });
           throw new Error(message);
         } else if (error.request) {
           // Request made but no response received

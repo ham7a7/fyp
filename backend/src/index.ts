@@ -7,7 +7,7 @@ import session from "express-session";
 import passport from "passport";
 
 import path, { dirname } from "path";
-import { fileURLToPath } from 'url';
+import { fileURLToPath } from "url";
 import { connectToDb } from "./database/db.js";
 import "./passport.js";
 import appRouter from "./routes/index.js";
@@ -26,11 +26,25 @@ app.use(express.json());
 app.use(express.static(path.join(__dirname, "../public")));
 
 // CORS configuration
+// app.use(
+//   cors({
+//     origin: process.env.FRONTEND_URL,
+//     credentials: true,
+//   })
+// );
 app.use(
   cors({
-    origin: process.env.FRONTEND_URL,
+    origin: (origin, callback) => {
+      // Allow server-to-server or Postman
+      if (!origin) return callback(null, true);
+
+      // Allow ALL origins for widget
+      return callback(null, true);
+    },
     credentials: true,
-  })
+    methods: ["GET", "POST", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "X-API-Key"],
+  }),
 );
 app.use(cookieParser(process.env.COOKIE_SECRET));
 app.use(
@@ -46,7 +60,7 @@ app.use(
       mongoUrl: process.env.MONGODB_CONNECTION_URI!,
       collectionName: "sessions",
     }),
-  })
+  }),
 );
 app.use(passport.initialize());
 app.use(passport.session());

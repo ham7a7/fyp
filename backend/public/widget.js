@@ -1,6 +1,13 @@
 (function () {
   const botId = document.currentScript.getAttribute("data-bot-id");
-  const apiUrl = document.currentScript.getAttribute("data-api-url") || "http://localhost:3000";
+  const apiUrl =
+    document.currentScript.getAttribute("data-api-url") ||
+    "http://localhost:3000";
+
+  // Load marked.js library
+  const markedScript = document.createElement("script");
+  markedScript.src = "https://cdn.jsdelivr.net/npm/marked/marked.min.js";
+  document.head.appendChild(markedScript);
 
   // Inject styles
   const styles = `
@@ -239,6 +246,88 @@
       border-bottom-right-radius: 4px;
     }
 
+    .chatbot-message-text {
+      line-height: 1.5;
+    }
+
+    /* Markdown styling for bot messages */
+    .chatbot-message.bot .chatbot-message-text h1,
+    .chatbot-message.bot .chatbot-message-text h2,
+    .chatbot-message.bot .chatbot-message-text h3,
+    .chatbot-message.bot .chatbot-message-text h4,
+    .chatbot-message.bot .chatbot-message-text h5,
+    .chatbot-message.bot .chatbot-message-text h6 {
+      margin: 8px 0 4px 0;
+      font-weight: 600;
+      color: #1f2937;
+    }
+
+    .chatbot-message.bot .chatbot-message-text h1 { font-size: 1.5em; }
+    .chatbot-message.bot .chatbot-message-text h2 { font-size: 1.3em; }
+    .chatbot-message.bot .chatbot-message-text h3 { font-size: 1.1em; }
+
+    .chatbot-message.bot .chatbot-message-text p {
+      margin: 4px 0;
+    }
+
+    .chatbot-message.bot .chatbot-message-text ul,
+    .chatbot-message.bot .chatbot-message-text ol {
+      margin: 8px 0;
+      padding-left: 20px;
+    }
+
+    .chatbot-message.bot .chatbot-message-text li {
+      margin: 4px 0;
+    }
+
+    .chatbot-message.bot .chatbot-message-text code {
+      background: #f3f4f6;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-family: 'Courier New', monospace;
+      font-size: 0.9em;
+      color: #db2777;
+    }
+
+    .chatbot-message.bot .chatbot-message-text pre {
+      background: #f3f4f6;
+      padding: 12px;
+      border-radius: 6px;
+      overflow-x: auto;
+      margin: 8px 0;
+    }
+
+    .chatbot-message.bot .chatbot-message-text pre code {
+      background: none;
+      padding: 0;
+      color: #1f2937;
+    }
+
+    .chatbot-message.bot .chatbot-message-text blockquote {
+      border-left: 3px solid #667eea;
+      padding-left: 12px;
+      margin: 8px 0;
+      color: #6b7280;
+      font-style: italic;
+    }
+
+    .chatbot-message.bot .chatbot-message-text a {
+      color: #667eea;
+      text-decoration: none;
+    }
+
+    .chatbot-message.bot .chatbot-message-text a:hover {
+      text-decoration: underline;
+    }
+
+    .chatbot-message.bot .chatbot-message-text strong {
+      font-weight: 600;
+    }
+
+    .chatbot-message.bot .chatbot-message-text em {
+      font-style: italic;
+    }
+
     .chatbot-message-time {
       font-size: 11px;
       margin-top: 4px;
@@ -472,7 +561,7 @@
     isOpen = !isOpen;
     bubble.classList.toggle("active", isOpen);
     chatWindow.classList.toggle("open", isOpen);
-    
+
     if (isOpen) {
       input.focus();
       badge.classList.remove("show");
@@ -486,7 +575,10 @@
   // Format time
   function formatTime() {
     const now = new Date();
-    return now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+    return now.toLocaleTimeString("en-US", {
+      hour: "2-digit",
+      minute: "2-digit",
+    });
   }
 
   // Add message to chat
@@ -497,14 +589,29 @@
     }
 
     const messageDiv = document.createElement("div");
-    messageDiv.className = `chatbot-message ${isUser ? 'user' : 'bot'}`;
-    messageDiv.innerHTML = `
-      <div class="chatbot-message-content">
-        ${text}
-        <div class="chatbot-message-time">${formatTime()}</div>
-      </div>
-    `;
-    
+    messageDiv.className = `chatbot-message ${isUser ? "user" : "bot"}`;
+
+    const contentDiv = document.createElement("div");
+    contentDiv.className = "chatbot-message-content";
+
+    const textDiv = document.createElement("div");
+    textDiv.className = "chatbot-message-text";
+
+    // Use marked.js to render markdown for bot messages
+    if (!isUser && typeof marked !== "undefined") {
+      textDiv.innerHTML = marked.parse(text);
+    } else {
+      textDiv.textContent = text;
+    }
+
+    const timeDiv = document.createElement("div");
+    timeDiv.className = "chatbot-message-time";
+    timeDiv.textContent = formatTime();
+
+    contentDiv.appendChild(textDiv);
+    contentDiv.appendChild(timeDiv);
+    messageDiv.appendChild(contentDiv);
+
     messagesContainer.appendChild(messageDiv);
     messagesContainer.scrollTop = messagesContainer.scrollHeight;
 
@@ -539,13 +646,13 @@
 
       const response = await fetch(`${apiUrl}/api/bots/chat-with-bot`, {
         method: "POST",
-        headers: { 
-          "Content-Type": "application/json"
+        headers: {
+          "Content-Type": "application/json",
         },
         body: JSON.stringify({
           publicBotId: botId,
-          message: message
-        })
+          message: message,
+        }),
       });
 
       if (!response.ok) {
@@ -553,17 +660,14 @@
       }
 
       const data = await response.json();
-      
-      // Simulate typing delay for better UX
+
       console.log("Bot response data:", data.response);
-        setTyping(false);
-        addMessage(data.response);
-
-
+      setTyping(false);
+      addMessage(data.response);
     } catch (error) {
       setTyping(false);
       console.error("Chatbot error:", error);
-      
+
       const errorDiv = document.createElement("div");
       errorDiv.className = "chatbot-error";
       errorDiv.textContent = "Sorry, something went wrong. Please try again.";
@@ -577,7 +681,7 @@
 
   // Event listeners
   sendBtn.addEventListener("click", sendMessage);
-  
+
   input.addEventListener("keypress", (e) => {
     if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
@@ -591,5 +695,4 @@
 
   // Initialize
   sendBtn.disabled = true;
-
 })();
