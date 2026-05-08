@@ -19,7 +19,7 @@ export const createIntentValidators: ValidationChain[] = [
       // Check that every item is a non-empty string
       if (
         !phrases.every(
-          (phrase) => typeof phrase === "string" && phrase.trim().length > 0
+          (phrase) => typeof phrase === "string" && phrase.trim().length > 0,
         )
       ) {
         throw new Error("All training phrases must be non-empty strings.");
@@ -35,7 +35,7 @@ export const createIntentValidators: ValidationChain[] = [
       if (
         !responses.every(
           (response) =>
-            typeof response === "string" && response.trim().length > 0
+            typeof response === "string" && response.trim().length > 0,
         )
       ) {
         throw new Error("All responses must be non-empty strings.");
@@ -52,7 +52,7 @@ export const createIntentValidators: ValidationChain[] = [
     .if(body("isFulfillment").equals("true"))
     .exists()
     .withMessage("Webhook URL is required when fulfillment is enabled.")
-    .isURL()
+    .isURL({ require_tld: false, require_protocol: true })
     .withMessage("Webhook URL must be a valid URL."),
 
   body("webhookHeaders")
@@ -60,7 +60,7 @@ export const createIntentValidators: ValidationChain[] = [
     .if(body("isFulfillment").equals("true"))
     .isArray({ min: 1 })
     .withMessage(
-      "Webhook headers must be provided as a non-empty array when fulfillment is enabled."
+      "Webhook headers must be provided as a non-empty array when fulfillment is enabled.",
     )
     .custom((headers: Record<string, any>[]) => {
       if (!Array.isArray(headers) || headers.length === 0) return true;
@@ -73,14 +73,13 @@ export const createIntentValidators: ValidationChain[] = [
           Object.keys(header).length === 0
         ) {
           throw new Error(
-            "Each webhook header must be a non-empty key-value object."
+            "Each webhook header must be a non-empty key-value object.",
           );
         }
       }
       return true;
     }),
 ];
-
 
 export const updateIntentValidators: ValidationChain[] = [
   body("intentId")
@@ -105,7 +104,7 @@ export const updateIntentValidators: ValidationChain[] = [
       // Check that every item is a non-empty string
       if (
         !phrases.every(
-          (phrase) => typeof phrase === "string" && phrase.trim().length > 0
+          (phrase) => typeof phrase === "string" && phrase.trim().length > 0,
         )
       ) {
         throw new Error("All training phrases must be non-empty strings.");
@@ -113,7 +112,7 @@ export const updateIntentValidators: ValidationChain[] = [
       return true;
     }),
 
-    body("responses")
+  body("responses")
     .optional({ values: "null" })
     .isArray({ min: 1 })
     .withMessage("Responses must be an array with at least one response.")
@@ -122,7 +121,7 @@ export const updateIntentValidators: ValidationChain[] = [
       if (
         !responses.every(
           (response) =>
-            typeof response === "string" && response.trim().length > 0
+            typeof response === "string" && response.trim().length > 0,
         )
       ) {
         throw new Error("All responses must be non-empty strings.");
@@ -130,7 +129,7 @@ export const updateIntentValidators: ValidationChain[] = [
       return true;
     }),
 
-     body("isFulfillment")
+  body("isFulfillment")
     .isBoolean()
     .withMessage("isFulfillment must be a boolean.")
     .toBoolean(),
@@ -139,7 +138,7 @@ export const updateIntentValidators: ValidationChain[] = [
     .if(body("isFulfillment").equals("true"))
     .exists()
     .withMessage("Webhook URL is required when fulfillment is enabled.")
-    .isURL()
+    .isURL({ require_tld: false, require_protocol: true })
     .withMessage("Webhook URL must be a valid URL."),
 
   body("webhookHeaders")
@@ -147,7 +146,7 @@ export const updateIntentValidators: ValidationChain[] = [
     .if(body("isFulfillment").equals("true"))
     .isArray({ min: 1 })
     .withMessage(
-      "Webhook headers must be provided as a non-empty array when fulfillment is enabled."
+      "Webhook headers must be provided as a non-empty array when fulfillment is enabled.",
     )
     .custom((headers: Record<string, any>[]) => {
       if (!Array.isArray(headers) || headers.length === 0) return true;
@@ -160,20 +159,18 @@ export const updateIntentValidators: ValidationChain[] = [
           Object.keys(header).length === 0
         ) {
           throw new Error(
-            "Each webhook header must be a non-empty key-value object."
+            "Each webhook header must be a non-empty key-value object.",
           );
         }
       }
       return true;
     }),
+];
 
-
-]
-
-export const intentIdValidators:ValidationChain[] =[
-    body("intentId")
+export const intentIdValidators: ValidationChain[] = [
+  body("intentId")
     .isString()
     .withMessage("Intent ID must be a string")
     .notEmpty()
     .withMessage("Intent ID cannot be empty"),
-]
+];

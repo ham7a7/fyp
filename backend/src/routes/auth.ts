@@ -1,4 +1,4 @@
-import { Router } from "express";
+import { Router, type Request, type Response } from "express";
 import passport from "passport";
 import {
   getCurrentUser,
@@ -19,9 +19,14 @@ auth.post(
   loginValidators,
   validator,
   passport.authenticate("local"),
-  loginHandler
+  loginHandler,
 );
 auth.post("/logout", logout);
 auth.get("/me", getCurrentUser);
+
+auth.post("/test-fyp", (req: Request, res: Response) => {
+  console.log("Received request body :", req.body);
+  res.json({ hi: "Try wehbhook ?" });
+});
 
 export default auth;

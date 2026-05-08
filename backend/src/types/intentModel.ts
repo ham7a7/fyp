@@ -1,5 +1,9 @@
 import type mongoose from "mongoose";
 
+export interface webhookHeaders {
+  key: string;
+  value: string;
+}
 export interface IIntentModel {
   _id: mongoose.Types.ObjectId;
   botId: mongoose.Types.ObjectId;
@@ -9,7 +13,7 @@ export interface IIntentModel {
   responses: string[];
   isFulfillment: boolean;
   webhookUrl: string;
-  webhookHeaders: Record<string, any>[];
+  webhookHeaders: webhookHeaders[];
   createdAt: Date;
   updatedAt: Date;
 }

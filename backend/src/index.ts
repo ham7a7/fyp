@@ -68,5 +68,5 @@ app.use(passport.session());
 app.use("/", appRouter);
 
 connectToDb()
-  .then(() => app.listen(PORT, () => `listening on port ${PORT}`))
+  .then(() => app.listen(PORT, () => console.log(`listening on port ${PORT}`)))
   .catch((error) => console.error(error.message));

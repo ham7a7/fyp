@@ -51,7 +51,7 @@ export const askQuestion = async (
   query: string,
   bot: IBotModel,
   intents: IIntentModel[] | null,
-) => {
+): Promise<string> => {
   const botId = bot._id.toString();
   try {
     const vectorStore = getVectorStore();
@@ -75,8 +75,17 @@ export const askQuestion = async (
     const systemPrompt = `You are a helpful AI assistant. Use the following intents and context to answer the user's question. If the answer is not in intents or the context, say you don't know.
   
   Intents:
-    If the user query matches one of the intent training phrases take answer from the intent responses.
-  ${intents && intents.length > 0 ? intents.map((intent) => `- Name: ${intent.name}: - Training Phrases: ${intent.trainingPhrases} - Responses: ${intent.responses}`) : ""}
+    If the user query matches one of the intent training phrases take answer from the intent responses, if the intent has isFulfillment equals true, response with a json object with the following format:
+{
+    fulfillment: true,
+    _id: "intent id",
+    webhookUrl: "webhook url from the intent",
+    webhookHeaders: {
+        "key": "value" // from the intent webhook headers
+         },
+} 
+
+  ${intents && intents.length > 0 ? intents.map((intent) => `- Name: ${intent.name}: - Training Phrases: ${intent.trainingPhrases} - Responses: ${intent.responses} - _id: ${intent._id} - isFulfulment: ${intent.isFulfillment} - webhookUrl: ${intent.webhookUrl} - webhookHeaders: ${JSON.stringify(intent.webhookHeaders)}, `) : ""}
 
   Context:
   ${context}
@@ -89,8 +98,8 @@ export const askQuestion = async (
       { role: "user", content: query },
     ]);
 
-    return response.content;
+    return response.content.toString();
   } catch (error) {
-    return error;
+    throw error;
   }
 };

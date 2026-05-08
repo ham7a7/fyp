@@ -1,10 +1,12 @@
+import type { webhookHeaders } from "../types/intentModel.js";
+
 export interface CreateIntentDto {
   name: string;
   trainingPhrases: string[];
   responses: string[];
   isFulfillment: boolean;
   webhookUrl?: string;
-  webhookHeaders?: Record<string, any>[];
+  webhookHeaders?: webhookHeaders[];
 }
 
 export interface UpdateIntentDto {
@@ -14,7 +16,7 @@ export interface UpdateIntentDto {
   responses?: string[];
   isFulfillment?: boolean;
   webhookUrl?: string;
-  webhookHeaders?: Record<string, any>[];
+  webhookHeaders?: webhookHeaders[];
 }
 
 export interface DeleteIntentDto {

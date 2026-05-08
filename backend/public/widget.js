@@ -656,7 +656,8 @@
       });
 
       if (!response.ok) {
-        throw new Error("Failed to get response from bot");
+        const errorData = await response.json();
+        throw errorData;
       }
 
       const data = await response.json();
@@ -666,11 +667,11 @@
       addMessage(data.response);
     } catch (error) {
       setTyping(false);
-      console.error("Chatbot error:", error);
+      console.error("Chatbot error: ", error.error);
 
       const errorDiv = document.createElement("div");
       errorDiv.className = "chatbot-error";
-      errorDiv.textContent = "Sorry, something went wrong. Please try again.";
+      errorDiv.textContent = error.message;
       messagesContainer.appendChild(errorDiv);
       messagesContainer.scrollTop = messagesContainer.scrollHeight;
     } finally {

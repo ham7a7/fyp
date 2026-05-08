@@ -1,3 +1,4 @@
+import axios from "axios";
 import type { Request, Response } from "express";
 import mongoose from "mongoose";
 import BotModel from "../database/schemas/bot.js";
@@ -242,12 +243,67 @@ export const chatWithBot = async (
   const intents: IIntentModel[] | null = await IntentModel.find({
     botId: bot._id,
     ownerId: bot.ownerId,
+  }).select({
+    name: 1,
+    _id: 1,
+    trainingPhrases: 1,
+    responses: 1,
+    isFulfillment: 1,
+    webhookUrl: 1,
+    webhookHeaders: 1,
   });
   try {
-    const answer = await askQuestion(message, bot, intents);
+    let answer = await askQuestion(message, bot, intents);
     console.log("Answer:", answer);
+    answer = await handleWebhook(message, answer);
+    console.log("Answer:", answer);
+
     res.json({ response: answer });
-  } catch (error) {
-    res.status(500).json({ error });
+  } catch (error: any) {
+    console.error("Error in chatWithBot:", error?.message);
+    res.status(500).json({
+      message: "An error occurred while processing the request",
+      error: error?.message,
+    });
   }
+};
+
+const handleWebhook = async (message: string, AIAnswer: string) => {
+  const answer = AIAnswer;
+  if (
+    answer &&
+    typeof answer === "string" &&
+    answer.includes("fulfillment") &&
+    answer.includes("webhookUrl")
+  ) {
+    const fulfillmentData = JSON.parse(answer);
+    if (
+      fulfillmentData &&
+      fulfillmentData.fulfillment &&
+      fulfillmentData.webhookUrl
+    ) {
+      // Call the webhook with the necessary data
+      const intent = await IntentModel.findById(fulfillmentData._id);
+      if (intent) {
+        const res = await axios.post(
+          fulfillmentData.webhookUrl,
+          {
+            query: message,
+            intentId: fulfillmentData._id,
+            webhookHeaders: fulfillmentData.webhookHeaders,
+          },
+          {
+            headers: fulfillmentData.webhookHeaders,
+          },
+        );
+        if (!res.data || !res.data.response) {
+          throw new Error(
+            "Invalid response from webhook, missing 'response' field",
+          );
+        }
+        return res.data.response;
+      }
+    }
+  }
+  return answer;
 };
