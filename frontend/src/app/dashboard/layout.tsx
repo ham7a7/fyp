@@ -40,47 +40,33 @@ export default function DashboardLayout({
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <nav className="bg-white shadow">
+    <div className="min-h-screen flex flex-col bg-gray-50 font-sans text-gray-900 selection:bg-blue-200">
+      <nav className="sticky top-0 z-50 backdrop-blur-md bg-white/70 border-b border-gray-200">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between h-16 items-center">
             <div className="flex items-center gap-8">
-              <h1 className="text-xl font-bold text-blue-600">AI Chatbot Builder</h1>
-              <div className="hidden md:flex gap-4">
-                <button
-                  onClick={() => router.push('/dashboard')}
-                  className={`font-medium transition-colors ${
-                    pathname === '/dashboard'
-                      ? 'text-blue-600'
-                      : 'text-slate-700 hover:text-blue-600'
-                  }`}
-                >
-                  Dashboard
-                </button>
-                <button
-                  onClick={() => router.push('/dashboard/bots')}
-                  className={`font-medium transition-colors ${
-                    isActive('/dashboard/bots')
-                      ? 'text-blue-600'
-                      : 'text-slate-700 hover:text-blue-600'
-                  }`}
-                >
-                  My Bots
-                </button>
+              <h1 className="text-xl font-extrabold tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-indigo-600 cursor-pointer" onClick={() => router.push('/dashboard')}>
+                AI Chatbot Builder
+              </h1>
+              <div className="hidden md:flex gap-6 items-center">
+                {/* Dashboard link removed as requested */}
               </div>
             </div>
             <div className="flex items-center gap-4">
-              <span className="text-slate-800 font-medium hidden sm:inline">
-                Welcome, {user?.name}
+              <span className="text-sm font-semibold text-gray-700 hidden sm:inline bg-gray-100 px-3 py-1.5 rounded-full">
+                👋 {user?.name}
               </span>
-              <Button onClick={logout} variant="outline" size="sm">
-                Logout
-              </Button>
+              <div className={pathname?.match(/\/dashboard\/bots\/[^\/]+/) ? 'hidden md:block' : 'block'}>
+                <Button onClick={logout} variant="outline" size="sm" className="!h-9 !px-4">
+                  Logout
+                </Button>
+              </div>
+              <div id="mobile-menu-portal" className="md:hidden flex items-center"></div>
             </div>
           </div>
         </div>
       </nav>
-      <main>{children}</main>
+      <main className="flex-1 flex flex-col">{children}</main>
     </div>
   );
 }

@@ -2,6 +2,7 @@
 
 import { botService } from '@/services/bot.service';
 import type { Bot } from '@/types/bot';
+import { Pencil, Trash2 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { Button } from '../ui/Button';
@@ -123,93 +124,69 @@ export default function BotDetail({ botId }: BotDetailProps) {
   }
 
   return (
-    <div className="max-w-4xl mx-auto space-y-6">
+    <div className="max-w-4xl space-y-6">
       <div className="flex justify-between items-center">
-        <h2 className="text-3xl font-bold text-gray-900">{bot.name}</h2>
-        <div className="flex gap-2">
-          <Button onClick={handleEdit}>Edit</Button>
-          <button
-            onClick={handleDelete}
-            className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700"
+        <h2 className="text-3xl font-extrabold text-gray-900">{bot.name}</h2>
+        <div className="flex items-center gap-3">
+          <Button onClick={handleEdit} variant="outline" className="flex items-center gap-2">
+            <Pencil className="w-4 h-4" />
+            Edit Bot
+          </Button>
+          <Button 
+            onClick={handleDelete} 
+            className="flex items-center gap-2 !bg-red-600 hover:!bg-red-700 !text-white border-transparent"
           >
-            Delete
-          </button>
+            <Trash2 className="w-4 h-4" />
+            Delete Bot
+          </Button>
         </div>
       </div>
 
       {error && (
-        <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded">
+        <div className="bg-red-50 border-l-4 border-red-500 text-red-700 px-6 py-4 rounded-r-xl shadow-sm text-sm font-medium">
           {error}
         </div>
       )}
 
-      {/* Quick Actions */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <button
-          onClick={() => router.push(`/dashboard/bots/${botId}/intents`)}
-          className="p-4 bg-blue-50 border-2 border-blue-200 rounded-lg hover:bg-blue-100 transition-colors text-left"
-        >
-          <h4 className="font-semibold text-blue-900 mb-1">Manage Intents</h4>
-          <p className="text-sm text-blue-700">
-            Train your bot to understand user queries
-          </p>
-        </button>
-        <button
-          onClick={() => router.push(`/dashboard/bots/${botId}/knowledge`)}
-          className="p-4 bg-green-50 border-2 border-green-200 rounded-lg hover:bg-green-100 transition-colors text-left"
-        >
-          <h4 className="font-semibold text-green-900 mb-1">Knowledge Base</h4>
-          <p className="text-sm text-green-700">
-            Upload documents and data for your bot
-          </p>
-        </button>
-        <button
-          onClick={() => router.push(`/dashboard/bots/${botId}/integration`)}
-          className="p-4 bg-purple-50 border-2 border-purple-200 rounded-lg hover:bg-purple-100 transition-colors text-left"
-        >
-          <h4 className="font-semibold text-purple-900 mb-1">Integration & API</h4>
-          <p className="text-sm text-purple-700">
-            Get widget code and API credentials
-          </p>
-        </button>
-      </div>
-
       {/* Basic Information */}
-      <div className="bg-white rounded-lg shadow p-6 space-y-4">
-        <h3 className="text-xl font-semibold text-gray-900 mb-4">Basic Information</h3>
+      <div className="bg-white rounded-3xl border border-gray-100 shadow-sm p-8 space-y-6">
+        <h3 className="text-xl font-bold text-gray-900 border-b border-gray-50 pb-4">Basic Information</h3>
         
         <div>
-          <label className="block text-sm font-medium text-gray-700">Description</label>
-          <p className="mt-1 text-gray-900">{bot.description}</p>
+          <label className="block text-sm font-semibold text-gray-500 mb-1">Description</label>
+          <p className="text-gray-900 font-medium">{bot.description}</p>
+        </div>
+
+        <div className="grid grid-cols-2 gap-6 bg-gray-50 p-6 rounded-2xl">
+          <div>
+            <label className="block text-sm font-semibold text-gray-500 mb-1">Use Case</label>
+            <p className="text-gray-900 font-medium">{bot.usecase}</p>
+          </div>
+          <div>
+            <label className="block text-sm font-semibold text-gray-500 mb-1">Language</label>
+            <p className="text-gray-900 font-medium">{bot.language}</p>
+          </div>
         </div>
 
         <div className="grid grid-cols-2 gap-4">
-          <div>
-            <label className="block text-sm font-medium text-gray-700">Use Case</label>
-            <p className="mt-1 text-gray-900">{bot.usecase}</p>
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-700">Language</label>
-            <p className="mt-1 text-gray-900">{bot.language}</p>
-          </div>
            <div>
-            <label className="block text-sm font-medium text-gray-700">Created At</label>
-            <p className="mt-1 text-sm text-gray-600">
+            <label className="block text-sm font-semibold text-gray-500 mb-1">Created At</label>
+            <p className="text-sm font-medium text-gray-900">
               {new Date(bot.createdAt).toLocaleString()}
             </p>
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700">Updated At</label>
-            <p className="mt-1 text-sm text-gray-600">
+            <label className="block text-sm font-semibold text-gray-500 mb-1">Updated At</label>
+            <p className="text-sm font-medium text-gray-900">
               {new Date(bot.updatedAt).toLocaleString()}
             </p>
           </div>
         </div>
 
-        <div>
-          <label className="block text-sm font-medium text-gray-700">Status</label>
-          <span className={`inline-block mt-1 px-3 py-1 rounded-full text-sm ${
-            bot.status === 'Active' ? 'bg-green-100 text-green-800' : 'bg-red-300 text-gray-800'
+        <div className="pt-4 border-t border-gray-50">
+          <label className="block text-sm font-semibold text-gray-500 mb-2">Status</label>
+          <span className={`inline-block px-4 py-1.5 rounded-full text-sm font-bold shadow-sm ${
+            bot.status === 'Active' ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-600'
           }`}>
             {bot.status}
           </span>
