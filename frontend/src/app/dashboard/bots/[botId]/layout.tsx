@@ -65,7 +65,7 @@ export default function BotSubPageLayout({
   }, [pathname]);
 
   const navItems = [
-    { name: 'Dashboard', href: `/dashboard/bots/${botId}`, icon: Icons.Dashboard, exact: true },
+    { name: 'Details', href: `/dashboard/bots/${botId}`, icon: Icons.Dashboard, exact: true },
     { name: 'Intents', href: `/dashboard/bots/${botId}/intents`, icon: Icons.Intents },
     { name: 'Knowledge Base', href: `/dashboard/bots/${botId}/knowledge`, icon: Icons.Knowledge },
     { name: 'Integration & API', href: `/dashboard/bots/${botId}/integration`, icon: Icons.Integration },
@@ -79,7 +79,7 @@ export default function BotSubPageLayout({
   };
 
   return (
-    <div className="flex flex-col md:flex-row flex-1 w-full bg-white relative">
+    <div className="flex flex-col md:flex-row flex-1 w-full bg-slate-50 relative">
       {/* Portal Menu Toggle to Header */}
       {mounted && document.getElementById('mobile-menu-portal') && createPortal(
         <button
@@ -102,7 +102,7 @@ export default function BotSubPageLayout({
 
       {/* Sidebar */}
       <div className={`
-        fixed inset-y-0 left-0 z-50 transform bg-white md:bg-transparent
+        fixed inset-y-0 left-0 z-50 transform bg-white
         w-64 border-r border-gray-200 flex flex-col md:sticky md:top-16 md:h-[calc(100vh-4rem)] overflow-y-auto
         transition-transform duration-200 ease-in-out md:transform-none md:z-auto
         ${isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'}
@@ -142,14 +142,14 @@ export default function BotSubPageLayout({
             }}
             className="w-full flex items-center gap-3 px-4 py-3 rounded-xl font-medium text-red-600 hover:bg-red-50 transition-colors"
           >
-            <LogOut className="w-5 h-5 flex-shrink-0" />
+            <LogOut className="w-5 h-5 shrink-0" />
             Logout
           </button>
         </div>
       </div>
 
       {/* Content */}
-      <div className="flex-1 min-w-0 p-4 md:p-8 bg-white">
+      <div className="flex-1 min-w-0 p-4 md:p-8 bg-slate-50">
         <div className="max-w-5xl mx-auto">
           {children}
         </div>
