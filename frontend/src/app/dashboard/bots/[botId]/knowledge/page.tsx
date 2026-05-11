@@ -21,12 +21,14 @@ function KnowledgePage({ params }: PageProps) {
   };
 
   return (
-    <div className="container mx-auto px-4 py-8 space-y-8">
-      <div>
-        <h1 className="text-3xl font-bold text-gray-900 mb-2">Knowledge Base</h1>
-        <p className="text-gray-600">
-          Upload and manage documents to train your bot with custom knowledge
-        </p>
+    <div className="max-w-7xl mx-auto space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
+      <div className="bg-white/50 backdrop-blur-sm p-6 rounded-3xl border border-gray-100 shadow-sm flex flex-col md:flex-row justify-between md:items-center gap-4">
+        <div>
+          <h1 className="text-3xl font-extrabold text-gray-900 tracking-tight">Knowledge Base</h1>
+          <p className="text-sm font-medium text-gray-500 mt-1">
+            Upload and manage documents to train your bot with custom knowledge.
+          </p>
+        </div>
       </div>
 
       <KnowledgeUpload botId={botId} onUploadSuccess={handleUploadSuccess} />

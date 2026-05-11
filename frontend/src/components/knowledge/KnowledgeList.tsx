@@ -117,39 +117,33 @@ export default function KnowledgeList({ botId, refreshTrigger }: KnowledgeListPr
 
   if (loading) {
     return (
-      <div className="bg-white rounded-lg shadow p-6">
+      <div className="bg-white/70 backdrop-blur-md rounded-3xl shadow-sm border border-gray-100 p-8">
         <div className="flex items-center justify-center py-8">
-          <div className="text-gray-600">Loading documents...</div>
+          <div className="text-gray-500 font-medium">Loading documents...</div>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="bg-white rounded-lg shadow p-6 space-y-4">
-      <div className="flex justify-between items-center">
+    <div className="bg-white/70 backdrop-blur-md rounded-3xl shadow-sm border border-gray-100 p-8 space-y-6">
+      <div className="flex justify-between items-center pb-4 border-b border-gray-100">
         <div>
-          <h3 className="text-xl font-semibold text-gray-900">Knowledge Base Documents</h3>
-          <p className="text-sm text-gray-600 mt-1">
+          <h3 className="text-xl font-extrabold text-gray-900 tracking-tight">Knowledge Base Documents</h3>
+          <p className="text-sm font-medium text-gray-500 mt-1">
             {documents.length} {documents.length === 1 ? 'document' : 'documents'} uploaded
           </p>
         </div>
-        <button
-          onClick={() => router.push(`/dashboard/bots/${botId}`)}
-          className="px-4 py-2 bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300"
-        >
-          Back to Bot
-        </button>
       </div>
 
       {error && (
-        <div className="bg-yellow-50 border border-yellow-200 text-yellow-800 px-4 py-3 rounded">
-          <p className="text-sm">{error}</p>
+        <div className="bg-yellow-50 border border-yellow-100 text-yellow-800 px-6 py-4 rounded-2xl shadow-sm">
+          <p className="text-sm font-medium">{error}</p>
         </div>
       )}
 
       {documents.length === 0 && !error ? (
-        <div className="text-center py-12 bg-gray-50 rounded-lg">
+        <div className="text-center py-12 bg-gray-50/50 rounded-2xl border border-gray-100/50 shadow-inner">
           <div className="mb-4">
             <svg
               className="mx-auto h-12 w-12 text-gray-400"
@@ -165,51 +159,51 @@ export default function KnowledgeList({ botId, refreshTrigger }: KnowledgeListPr
               />
             </svg>
           </div>
-          <p className="text-gray-600 mb-2">No documents uploaded yet</p>
-          <p className="text-sm text-gray-500">
-            Upload documents above to build your bot&apos;s knowledge base
+          <p className="text-gray-900 font-bold mb-2">No documents uploaded yet</p>
+          <p className="text-sm text-gray-500 font-medium">
+            Upload documents above to build your bot&apos;s knowledge base.
           </p>
         </div>
       ) : (
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
           {documents.map((doc) => (
             <div
               key={doc._id}
-              className="border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow"
+              className="bg-white border border-gray-100 rounded-2xl p-5 hover:shadow-md hover:border-blue-100 transition-all duration-300 flex flex-col h-full"
             >
-              <div className="flex items-start gap-3">
-                <div className="flex-shrink-0">{getFileIcon(doc.fileType)}</div>
+              <div className="flex items-start gap-4">
+                <div className="flex-shrink-0 bg-gray-50 p-2 rounded-xl border border-gray-100">{getFileIcon(doc.fileType)}</div>
                 <div className="flex-1 min-w-0">
-                  <h4 className="text-sm font-medium text-gray-900 truncate" title={doc.title}>
+                  <h4 className="text-base font-bold text-gray-900 truncate" title={doc.title}>
                     {doc.title}
                   </h4>
-                  <p className="text-xs text-gray-500 mt-1">
+                  <p className="inline-block px-2.5 py-1 bg-blue-50 text-blue-700 text-xs font-bold rounded-lg mt-2">
                     {formatFileType(doc.fileType)}
                   </p>
                   {doc.description && (
-                    <p className="text-xs text-gray-600 mt-1 line-clamp-2">
+                    <p className="text-xs font-medium text-gray-500 mt-2 line-clamp-2">
                       {doc.description}
                     </p>
                   )}
-                  <p className="text-xs text-gray-400 mt-2">
+                  <p className="text-xs font-medium text-gray-400 mt-3">
                     Uploaded {new Date(doc.createdAt).toLocaleDateString()}
                   </p>
                 </div>
               </div>
 
-              <div className="mt-4 flex gap-2">
+              <div className="mt-auto pt-6 flex gap-3">
                 <a
                   href={doc.fileUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex-1 text-center px-3 py-1.5 text-sm bg-blue-600 text-white rounded hover:bg-blue-700"
+                  className="flex-1 inline-flex items-center justify-center px-4 py-2 text-sm font-bold bg-gray-50 border border-gray-200 text-gray-700 rounded-xl hover:bg-gray-100 transition-colors"
                 >
                   View
                 </a>
                 <button
                   onClick={() => handleDelete(doc._id, doc.title)}
                   disabled={deletingId === doc._id}
-                  className="flex-1 px-3 py-1.5 text-sm bg-red-600 text-white rounded hover:bg-red-700 disabled:opacity-50"
+                  className="flex-1 inline-flex items-center justify-center px-4 py-2 text-sm font-bold bg-red-50 text-red-600 rounded-xl hover:bg-red-100 transition-colors disabled:opacity-50"
                 >
                   {deletingId === doc._id ? 'Deleting...' : 'Delete'}
                 </button>

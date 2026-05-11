@@ -13,7 +13,7 @@ async function IntegrationPage({ params }: PageProps) {
   const { botId } = await params;
 
   return (
-    <div className="container mx-auto px-4 py-8">
+    <div className="max-w-7xl mx-auto animate-in fade-in slide-in-from-bottom-4 duration-500">
       <BotIntegration botId={botId} />
     </div>
   );
