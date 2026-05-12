@@ -1,5 +1,4 @@
 import Link from "next/link";
-import Script from "next/script";
 
 export default function Home() {
   return (
@@ -27,7 +26,6 @@ export default function Home() {
           </div>
         </div>
       </nav>
-      
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24 sm:py-32">
         <div className="text-center max-w-4xl mx-auto">
           <h2 className="text-5xl sm:text-6xl font-extrabold tracking-tight text-gray-900 mb-8 leading-tight">
@@ -54,12 +52,6 @@ export default function Home() {
               Live Demo
             </Link>
           </div>
-
-          <Script
-            src="http://localhost:3000/widget.js"
-            data-bot-id="80855f9774bfccc6"
-            strategy="lazyOnload"
-          />
 
           <div className="mt-32 grid grid-cols-1 md:grid-cols-3 gap-8 text-left">
             <div className="group bg-white p-8 rounded-2xl shadow-sm border border-gray-100 hover:shadow-xl hover:border-blue-100 transition-all duration-300">
