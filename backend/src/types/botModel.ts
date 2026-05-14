@@ -9,6 +9,13 @@ export interface IBotModel {
   language: string;
   status: string;
   origins?: string[];
+  widgetSettings?: {
+    headerName: string;
+    primaryColor: string;
+    darkMode: boolean;
+    welcomeTitle: string;
+    welcomeMessage: string;
+  };
   // intents: mongoose.Types.ObjectId[];
   // knowledgeBase: mongoose.Types.ObjectId[];
   //   widgetSettings: mongoose.Types.ObjectId;

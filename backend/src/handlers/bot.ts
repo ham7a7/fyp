@@ -72,7 +72,18 @@ export const editBot = async (
   req: Request<{}, {}, EditBotDto>,
   res: Response,
 ) => {
-  const { botId, botDescription, botName, botUsecase, botLanguage } = req.body;
+  const {
+    botId,
+    botDescription,
+    botName,
+    botUsecase,
+    botLanguage,
+    widgetHeaderName,
+    widgetPrimaryColor,
+    widgetDarkMode,
+    widgetWelcomeTitle,
+    widgetWelcomeMessage,
+  } = req.body;
   const ownerId = (req.user as any)._id;
   try {
     if (!mongoose.Types.ObjectId.isValid(botId)) {
@@ -85,12 +96,34 @@ export const editBot = async (
       language: botLanguage,
     };
 
+    const widgetUpdates: Record<string, any> = {};
+    if (widgetHeaderName !== undefined && widgetHeaderName !== null) {
+      widgetUpdates["widgetSettings.headerName"] = widgetHeaderName;
+    }
+    if (widgetPrimaryColor !== undefined && widgetPrimaryColor !== null) {
+      widgetUpdates["widgetSettings.primaryColor"] = widgetPrimaryColor;
+    }
+    if (widgetDarkMode !== undefined && widgetDarkMode !== null) {
+      widgetUpdates["widgetSettings.darkMode"] = widgetDarkMode;
+    }
+    if (widgetWelcomeTitle !== undefined && widgetWelcomeTitle !== null) {
+      widgetUpdates["widgetSettings.welcomeTitle"] = widgetWelcomeTitle;
+    }
+    if (widgetWelcomeMessage !== undefined && widgetWelcomeMessage !== null) {
+      widgetUpdates["widgetSettings.welcomeMessage"] = widgetWelcomeMessage;
+    }
+
     // remove properties with null or undefined values
     updateObject = Object.fromEntries(
       Object.entries(updateObject).filter(
         ([, value]) => value !== null && value !== undefined,
       ),
     );
+
+    updateObject = {
+      ...updateObject,
+      ...widgetUpdates,
+    };
 
     const bot = await BotModel.findOneAndUpdate(
       { _id: botId, ownerId: ownerId },
@@ -106,6 +139,44 @@ export const editBot = async (
     return res.status(200).json({
       message: "Bot updated successfully",
       updatedBot: bot,
+    });
+  } catch (error) {
+    return res.status(500).json({ message: "Server error", error });
+  }
+};
+
+export const getWidgetSettingsByPublicId = async (
+  req: Request<{ publicBotId: string }>,
+  res: Response,
+) => {
+  try {
+    const { publicBotId } = req.params;
+    if (!publicBotId) {
+      return res.status(400).json({ message: "Public Bot ID is required" });
+    }
+
+    const bot = await BotModel.findOne({ publicBotId }).select({
+      name: 1,
+      widgetSettings: 1,
+    });
+
+    if (!bot) {
+      return res.status(404).json({ message: "Bot not found" });
+    }
+
+    const widgetSettings = {
+      headerName: bot.widgetSettings?.headerName ?? "AI Assistant",
+      primaryColor: bot.widgetSettings?.primaryColor ?? "#667eea",
+      darkMode: bot.widgetSettings?.darkMode ?? false,
+      welcomeTitle: bot.widgetSettings?.welcomeTitle ?? "Welcome!",
+      welcomeMessage:
+        bot.widgetSettings?.welcomeMessage ??
+        "Hi there! How can I help you today?",
+    };
+
+    return res.status(200).json({
+      botName: bot.name,
+      widgetSettings,
     });
   } catch (error) {
     return res.status(500).json({ message: "Server error", error });

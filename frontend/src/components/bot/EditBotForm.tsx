@@ -195,6 +195,7 @@ export default function EditBotForm({ botId }: EditBotFormProps) {
           </select>
         </div>
 
+
         <div className="pt-6 border-t border-gray-100 flex gap-4">
           <Button type="submit" disabled={loading} className="flex-1 py-3 text-base font-semibold rounded-xl">
             {loading ? 'Updating...' : 'Update Bot'}

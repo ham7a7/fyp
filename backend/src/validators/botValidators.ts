@@ -1,4 +1,4 @@
-import { body, type ValidationChain } from "express-validator";
+import { body, param, type ValidationChain } from "express-validator";
 
 export const createBotValidators: ValidationChain[] = [
   body("botName")
@@ -54,6 +54,34 @@ export const editBotValidators: ValidationChain[] = [
     .optional({ values: "null" })
     .isString()
     .withMessage("Bot language must be a string"),
+  body("widgetHeaderName")
+    .optional({ values: "null" })
+    .isString()
+    .withMessage("Widget header name must be a string")
+    .isLength({ min: 1, max: 100 })
+    .withMessage("Widget header name must be between 1 and 100 characters"),
+  body("widgetPrimaryColor")
+    .optional({ values: "null" })
+    .isString()
+    .withMessage("Widget primary color must be a string")
+    .matches(/^#([0-9a-fA-F]{3}|[0-9a-fA-F]{6})$/)
+    .withMessage("Widget primary color must be a valid hex color"),
+  body("widgetDarkMode")
+    .optional({ values: "null" })
+    .isBoolean()
+    .withMessage("Widget dark mode must be a boolean"),
+  body("widgetWelcomeTitle")
+    .optional({ values: "null" })
+    .isString()
+    .withMessage("Widget welcome title must be a string")
+    .isLength({ min: 1, max: 120 })
+    .withMessage("Widget welcome title must be between 1 and 120 characters"),
+  body("widgetWelcomeMessage")
+    .optional({ values: "null" })
+    .isString()
+    .withMessage("Widget welcome message must be a string")
+    .isLength({ min: 1, max: 300 })
+    .withMessage("Widget welcome message must be between 1 and 300 characters"),
 ];
 
 export const chatWithBotValidators: ValidationChain[] = [
@@ -67,4 +95,12 @@ export const chatWithBotValidators: ValidationChain[] = [
     .withMessage("Bot ID must be a string")
     .notEmpty()
     .withMessage("Bot ID cannot be empty"),
+];
+
+export const publicBotIdParamValidators: ValidationChain[] = [
+  param("publicBotId")
+    .isString()
+    .withMessage("Public Bot ID must be a string")
+    .notEmpty()
+    .withMessage("Public Bot ID cannot be empty"),
 ];

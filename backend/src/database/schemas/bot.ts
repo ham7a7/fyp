@@ -22,6 +22,16 @@ export const BotSchema: Schema<IBotModel> = new Schema(
       default: "Active",
       required: true,
     },
+    widgetSettings: {
+      headerName: { type: String, default: "AI Assistant" },
+      primaryColor: { type: String, default: "#667eea" },
+      darkMode: { type: Boolean, default: false },
+      welcomeTitle: { type: String, default: "Welcome!" },
+      welcomeMessage: {
+        type: String,
+        default: "Hi there! How can I help you today?",
+      },
+    },
     // intents: [{ type: mongoose.Types.ObjectId, ref: "Intent" }],
     // knowledgeBase: {
     //   type: mongoose.Types.ObjectId,
