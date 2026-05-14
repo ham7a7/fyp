@@ -70,7 +70,7 @@ export default function BotSubPageLayout({
     { name: 'Knowledge Base', href: `/dashboard/bots/${botId}/knowledge`, icon: Icons.Knowledge },
     { name: 'Integration & API', href: `/dashboard/bots/${botId}/integration`, icon: Icons.Integration },
     { name: 'Widget Test', href: `/dashboard/bots/${botId}/widget-test`, icon: Icons.WidgetTest }, // optional placeholder
-    { name: 'Settings', href: `/dashboard/bots/${botId}/edit`, icon: Icons.Settings },
+    { name: 'Settings', href: `/dashboard/bots/${botId}/settings`, icon: Icons.Settings },
   ];
 
   const isActive = (href: string, exact?: boolean) => {

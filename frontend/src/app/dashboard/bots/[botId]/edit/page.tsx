@@ -13,7 +13,7 @@ function EditBotPage({ params }: EditBotPageProps) {
   
   return (
     <div className="py-8">
-      <div className="container mx-auto px-4">
+      <div className="container mx-auto px-4 w-full">
         <EditBotForm botId={botId} />
       </div>
     </div>

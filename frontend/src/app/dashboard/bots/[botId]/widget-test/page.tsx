@@ -100,9 +100,9 @@ function WidgetTestPage({ params }: PageProps) {
         </div>
       )}
 
-      {!loading && bot && (
-        <WidgetScriptLoader publicBotId={bot.publicBotId} />
-      )}
+      
+        <WidgetScriptLoader publicBotId={bot?.publicBotId??""} />
+    
     </div>
   );
 }
