@@ -5,6 +5,7 @@ import type { CreateBotDto } from '@/types/bot';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { Button } from '../ui/Button';
+import FormIntro from '../ui/FormIntro';
 import { Input } from '../ui/Input';
 
 export default function CreateBotForm() {
@@ -48,24 +49,17 @@ export default function CreateBotForm() {
   };
 
   return (
-    <div className="max-w-2xl mx-auto">
-      <h2 className="text-2xl font-bold text-gray-900 mb-6">Create New Bot</h2>
+    <div className="max-w-4xl mx-auto space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
+      <FormIntro
+        title="Create New Bot"
+        description="Set up the basics and launch your next AI assistant."
+        error={error}
+        successMessage={successMessage}
+      />
 
-      {error && (
-        <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded mb-4">
-          {error}
-        </div>
-      )}
-
-      {successMessage && (
-        <div className="bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded mb-4">
-          {successMessage}
-        </div>
-      )}
-
-      <form onSubmit={handleSubmit} className="space-y-6 bg-white p-6 rounded-lg shadow">
-        <div>
-          <label htmlFor="botName" className="block text-sm font-medium text-gray-700 mb-1">
+      <form onSubmit={handleSubmit} className="bg-white/70 backdrop-blur-md rounded-3xl border border-gray-100 shadow-sm p-8 space-y-10">
+        <div className="space-y-2">
+          <label htmlFor="botName" className="block text-sm font-extrabold text-gray-900 uppercase tracking-wider">
             Bot Name *
           </label>
           <Input
@@ -76,11 +70,12 @@ export default function CreateBotForm() {
             value={formData.botName}
             onChange={handleChange}
             placeholder="Enter bot name"
+            className="w-full transition-all bg-gray-50 focus:bg-white"
           />
         </div>
 
-        <div>
-          <label htmlFor="botDescription" className="block text-sm font-medium text-gray-700 mb-1">
+        <div className="space-y-2 pt-6 border-t border-gray-100">
+          <label htmlFor="botDescription" className="block text-sm font-extrabold text-gray-900 uppercase tracking-wider">
             Description *
           </label>
           <textarea
@@ -91,12 +86,12 @@ export default function CreateBotForm() {
             onChange={handleChange}
             placeholder="Describe what your bot does"
             rows={4}
-            className="w-full px-3 py-2 border text-gray-700 placeholder:text-gray-400 border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 bg-gray-50 focus:bg-white transition-all text-gray-900 placeholder:text-gray-400"
           />
         </div>
 
-        <div>
-          <label htmlFor="botUsecase" className="block text-sm font-medium text-gray-700 mb-1">
+        <div className="space-y-2 pt-6 border-t border-gray-100">
+          <label htmlFor="botUsecase" className="block text-sm font-extrabold text-gray-900 uppercase tracking-wider">
             Use Case *
           </label>
           <Input
@@ -107,11 +102,12 @@ export default function CreateBotForm() {
             value={formData.botUsecase}
             onChange={handleChange}
             placeholder="e.g., Customer Support, FAQ Assistant"
+            className="w-full transition-all bg-gray-50 focus:bg-white"
           />
         </div>
 
-        <div>
-          <label htmlFor="botLanguage" className="block text-sm font-medium text-gray-700 mb-1">
+        <div className="space-y-2 pt-6 border-t border-gray-100">
+          <label htmlFor="botLanguage" className="block text-sm font-extrabold text-gray-900 uppercase tracking-wider">
             Language *
           </label>
           <select
@@ -120,7 +116,7 @@ export default function CreateBotForm() {
             value={formData.botLanguage}
             onChange={handleChange}
             required
-            className="w-full px-3 py-2 border border-gray-300 placeholder:text-gray-400 text-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 bg-gray-50 focus:bg-white transition-all text-gray-900"
           >
             <option value="English">English</option>
             <option value="Spanish">Spanish</option>
@@ -135,17 +131,18 @@ export default function CreateBotForm() {
           </select>
         </div>
 
-        <div className="flex gap-4">
-          <Button type="submit" disabled={loading} className="flex-1">
-            {loading ? 'Creating...' : 'Create Bot'}
-          </Button>
-          <button
+        <div className="pt-6 border-t border-gray-100 flex gap-4">
+          <Button
             type="button"
+            variant="outline"
             onClick={() => router.push('/dashboard/bots')}
-            className="flex-1 px-4 py-2 bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300"
+            className="flex-1 py-3 text-base font-semibold rounded-xl border-gray-200 hover:bg-gray-50 text-gray-700"
           >
             Cancel
-          </button>
+          </Button>
+          <Button type="submit" disabled={loading} className="flex-1 py-3 text-base font-semibold rounded-xl">
+            {loading ? 'Creating...' : 'Create Bot'}
+          </Button>
         </div>
       </form>
     </div>

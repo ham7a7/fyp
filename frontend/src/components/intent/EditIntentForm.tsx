@@ -5,6 +5,7 @@ import type { UpdateIntentDto } from '@/types/intent';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { Button } from '../ui/Button';
+import FormIntro from '../ui/FormIntro';
 import { Input } from '../ui/Input';
 
 interface EditIntentFormProps {
@@ -176,30 +177,13 @@ export default function EditIntentForm({ botId, intentId }: EditIntentFormProps)
 
   return (
     <div className="max-w-4xl mx-auto space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
-      <div className="bg-white/50 backdrop-blur-sm p-6 rounded-3xl border border-gray-100 shadow-sm flex flex-col md:flex-row justify-between md:items-center gap-4">
-        <div>
-          <h2 className="text-3xl font-extrabold text-gray-900 tracking-tight">Edit Intent</h2>
-          <p className="text-sm font-medium text-gray-500 mt-1">Update the intent configuration for your bot.</p>
-        </div>
-        <Button onClick={() => router.push(`/dashboard/bots/${botId}/intents`)} variant="outline" className="border-gray-200">
-          Cancel
-        </Button>
-      </div>
-
-      {error && (
-        <div className="bg-red-50 border border-red-100 text-red-700 px-6 py-4 rounded-2xl shadow-sm text-sm font-medium">
-          {error}
-        </div>
-      )}
-
-      {success && (
-        <div className="bg-green-50 border border-green-100 text-green-700 px-6 py-4 rounded-2xl shadow-sm text-sm font-medium flex items-center gap-2">
-          <svg className="w-5 h-5 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-          </svg>
-          {success}
-        </div>
-      )}
+    
+      <FormIntro
+        title="Edit Intent"
+        description="Update the intent configuration for your bot."
+        error={error}
+        successMessage={success}
+      />
 
       <form onSubmit={handleSubmit} className="bg-white/70 backdrop-blur-md rounded-3xl border border-gray-100 shadow-sm p-8 space-y-10">
         {/* Intent Name */}

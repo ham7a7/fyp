@@ -84,6 +84,10 @@ function WidgetTestPage({ params }: PageProps) {
     };
   }, [botId]);
 
+  if (loading) {
+      return <LoadingState message="Loading Widget..." />;
+    }
+
   return (
     <div className="max-w-5xl mx-auto space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
       <div className="bg-white/50 backdrop-blur-sm p-6 rounded-3xl border border-gray-100 shadow-sm">
@@ -92,8 +96,6 @@ function WidgetTestPage({ params }: PageProps) {
           This page is for widget testing. The widget has been added to the bottom right corner automatically for you to interact with.
         </p>
       </div>
-
-      {loading && <LoadingState message="Loading bot details..." />}
 
       {!loading && error && (
         <div className="bg-red-50 border border-red-200 text-red-800 px-4 py-3 rounded-xl">

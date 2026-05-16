@@ -106,6 +106,10 @@ function SettingsPage({ params }: SettingsPageProps) {
     });
     setSuccessMessage('');
   };
+
+  if (loading) {
+    return <LoadingState message="Loading Settings..." />;
+  }
   
   return (
     <div className="py-8">
@@ -129,9 +133,7 @@ function SettingsPage({ params }: SettingsPageProps) {
           )}
 
           <div className="mt-8 bg-white/70 backdrop-blur-md rounded-3xl border border-gray-100 shadow-sm p-8">
-            {loading ? (
-              <LoadingState message="Loading widget settings..." className="min-h-0 p-4" />
-            ) : !bot ? (
+            { !bot ? (
               <div className="text-center text-red-600">Bot not found</div>
             ) : (
               <form onSubmit={handleSubmit} className="space-y-8">

@@ -19,7 +19,7 @@ function formatSegment(segment: string) {
 }
 
 function buildBreadcrumbs(pathname?: string) {
-  const breadcrumbs: Array<{ label: string; href?: string }> = [
+  const breadcrumbs: Array<Record<string,string>> = [
     { label: 'Dashboard', href: '/dashboard' },
   ];
 
