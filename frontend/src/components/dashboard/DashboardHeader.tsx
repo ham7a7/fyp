@@ -5,60 +5,11 @@ import { LogOut, User } from 'lucide-react';
 import { usePathname, useRouter } from 'next/navigation';
 import { useEffect, useRef, useState } from 'react';
 
-const BREADCRUMB_LABELS: Record<string, string> = {
-  dashboard: 'Dashboard',
-  bots: 'Bots',
-  intents: 'Intents',
-  knowledge: 'Knowledge',
-  users: 'Users',
-};
-
-function formatSegment(segment: string) {
-  const withSpaces = segment.replace(/-/g, ' ');
-  return withSpaces.charAt(0).toUpperCase() + withSpaces.slice(1);
-}
-
-function buildBreadcrumbs(pathname?: string) {
-  const breadcrumbs: Array<Record<string,string>> = [
-    { label: 'Dashboard', href: '/dashboard' },
-  ];
-
-  if (!pathname) {
-    return breadcrumbs;
-  }
-
-  const segments = pathname.split('/').filter(Boolean);
-  const dashboardIndex = segments.indexOf('dashboard');
-
-  if (dashboardIndex === -1) {
-    return breadcrumbs;
-  }
-
-  let currentPath = '/dashboard';
-  const afterDashboard = segments.slice(dashboardIndex + 1);
-
-  afterDashboard.forEach((segment, index) => {
-    currentPath += `/${segment}`;
-
-    const isIdSegment =
-      index > 0 &&
-      ['bots', 'intents', 'knowledge', 'users'].includes(afterDashboard[index - 1]);
-
-    const label = isIdSegment
-      ? 'Details'
-      : BREADCRUMB_LABELS[segment] || formatSegment(segment);
-
-    breadcrumbs.push({ label, href: currentPath });
-  });
-
-  return breadcrumbs;
-}
 
 export default function DashboardHeader() {
   const { user, logout } = useAuth();
   const router = useRouter();
   const pathname = usePathname();
-  const breadcrumbs = buildBreadcrumbs(pathname);
   const [menuOpen, setMenuOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement | null>(null);
 
@@ -96,27 +47,7 @@ export default function DashboardHeader() {
             >
               AI Chatbot Builder
             </h1>
-            <ol className="hidden md:flex items-center gap-2 text-sm text-gray-500">
-              {breadcrumbs.map((crumb, index) => {
-                const isLast = index === breadcrumbs.length - 1;
-                return (
-                  <li key={`${crumb.label}-${index}`} className="flex items-center gap-2">
-                    {index > 0 && <span className="text-gray-300">/</span>}
-                    {isLast ? (
-                      <span className="font-semibold text-gray-700">{crumb.label}</span>
-                    ) : (
-                      <button
-                        type="button"
-                        onClick={() => crumb.href && router.push(crumb.href)}
-                        className="hover:text-gray-700 transition-colors"
-                      >
-                        {crumb.label}
-                      </button>
-                    )}
-                  </li>
-                );
-              })}
-            </ol>
+           
           </div>
           <div className="flex items-center gap-4">
             <div
