@@ -39,6 +39,8 @@
       --widget-border: #e5e7eb;
       --widget-input: #ffffff;
       --widget-input-text: #111827;
+      --widget-bot-bubble: #ffffff;
+      --widget-bot-text: #1f2937;
     }
 
     .chatbot-widget.dark {
@@ -49,6 +51,8 @@
       --widget-border: #1f2937;
       --widget-input: #0b1220;
       --widget-input-text: #e5e7eb;
+      --widget-bot-bubble: #1f2937;
+      --widget-bot-text: #e5e7eb;
     }
 
     .chatbot-bubble {
@@ -260,8 +264,8 @@
     }
 
     .chatbot-message.bot .chatbot-message-content {
-      background: var(--widget-surface);
-      color: var(--widget-text);
+      background: var(--widget-bot-bubble);
+      color: var(--widget-bot-text);
       border-bottom-left-radius: 4px;
       box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
     }
@@ -277,7 +281,7 @@
     }
 
     .chatbot-message.bot .chatbot-message-text {
-      color: var(--widget-text);
+      color: var(--widget-bot-text);
     }
 
     /* Markdown styling for bot messages */
@@ -367,12 +371,15 @@
     .chatbot-typing {
       display: none;
       align-items: center;
-      gap: 4px;
+      gap: 6px;
       padding: 12px 16px;
-      background: white;
+      background: var(--widget-bot-bubble);
+      color: var(--widget-bot-text);
       border-radius: 12px;
+      border-bottom-left-radius: 4px;
       width: fit-content;
-      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+      box-shadow: 0 6px 14px rgba(0, 0, 0, 0.12);
+      margin-bottom: 16px;
     }
 
     .chatbot-typing.show {
@@ -383,7 +390,7 @@
       width: 8px;
       height: 8px;
       border-radius: 4px;
-      background: #9ca3af;
+      background: var(--widget-muted);
       animation: typing 1.4s ease infinite;
     }
 
@@ -546,12 +553,12 @@
           <h4 id="chatbot-welcome-title">Welcome!</h4>
           <p id="chatbot-welcome-message">Hi there! How can I help you today?</p>
         </div>
-      </div>
 
-      <div class="chatbot-typing" id="chatbot-typing">
-        <div class="chatbot-typing-dot"></div>
-        <div class="chatbot-typing-dot"></div>
-        <div class="chatbot-typing-dot"></div>
+        <div class="chatbot-typing" id="chatbot-typing">
+          <div class="chatbot-typing-dot"></div>
+          <div class="chatbot-typing-dot"></div>
+          <div class="chatbot-typing-dot"></div>
+        </div>
       </div>
 
       <div class="chatbot-input-area">
@@ -674,6 +681,7 @@
   function setTyping(show) {
     typingIndicator.classList.toggle("show", show);
     if (show) {
+      messagesContainer.appendChild(typingIndicator);
       messagesContainer.scrollTop = messagesContainer.scrollHeight;
     }
   }

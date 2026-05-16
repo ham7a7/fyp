@@ -69,6 +69,13 @@ function SettingsPage({ params }: SettingsPageProps) {
     });
   };
 
+  const handleToggleDarkMode = () => {
+    setFormData({
+      ...formData,
+      widgetDarkMode: !formData.widgetDarkMode,
+    });
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setSaving(true);
@@ -162,18 +169,25 @@ function SettingsPage({ params }: SettingsPageProps) {
                     <label htmlFor="widgetDarkMode" className="block text-sm font-extrabold text-gray-900 uppercase tracking-wider">
                       Dark Mode
                     </label>
-                    <div className="flex items-center gap-3 rounded-2xl border border-gray-200 bg-gray-50 px-4 py-3">
-                      <input
-                        id="widgetDarkMode"
-                        name="widgetDarkMode"
-                        type="checkbox"
-                        checked={Boolean(formData.widgetDarkMode)}
-                        onChange={handleChange}
-                        className="h-5 w-5 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-                      />
+                    <div className="flex items-center justify-between rounded-2xl border border-gray-200 bg-gray-50 px-4 py-3">
                       <span className="text-sm font-medium text-gray-700">
                         Enable dark mode for the widget
                       </span>
+                      <button
+                        id="widgetDarkMode"
+                        type="button"
+                        onClick={handleToggleDarkMode}
+                        aria-pressed={Boolean(formData.widgetDarkMode)}
+                        className={`relative inline-flex h-7 w-12 items-center rounded-full transition-colors ${
+                          formData.widgetDarkMode ? 'bg-blue-600' : 'bg-gray-300'
+                        }`}
+                      >
+                        <span
+                          className={`inline-block h-5 w-5 transform rounded-full bg-white shadow-sm transition-transform ${
+                            formData.widgetDarkMode ? 'translate-x-5' : 'translate-x-1'
+                          }`}
+                        />
+                      </button>
                     </div>
                   </div>
 
