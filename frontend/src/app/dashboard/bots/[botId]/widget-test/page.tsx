@@ -1,5 +1,6 @@
 "use client";
 
+import LoadingState from "@/components/ui/LoadingState";
 import { withAuth } from "@/lib/withAuth";
 import { botService } from "@/services/bot.service";
 import type { Bot } from "@/types/bot";
@@ -92,7 +93,7 @@ function WidgetTestPage({ params }: PageProps) {
         </p>
       </div>
 
-      {loading && <div className="p-4 text-gray-600">Loading bot details...</div>}
+      {loading && <LoadingState message="Loading bot details..." />}
 
       {!loading && error && (
         <div className="bg-red-50 border border-red-200 text-red-800 px-4 py-3 rounded-xl">

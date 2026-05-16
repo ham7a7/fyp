@@ -2,6 +2,7 @@
 
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
+import LoadingState from '@/components/ui/LoadingState';
 import { withAuth } from '@/lib/withAuth';
 import { botService } from '@/services/bot.service';
 import type { Bot, EditBotDto } from '@/types/bot';
@@ -129,7 +130,7 @@ function SettingsPage({ params }: SettingsPageProps) {
 
           <div className="mt-8 bg-white/70 backdrop-blur-md rounded-3xl border border-gray-100 shadow-sm p-8">
             {loading ? (
-              <div className="text-center text-gray-500">Loading widget settings...</div>
+              <LoadingState message="Loading widget settings..." className="min-h-0 p-4" />
             ) : !bot ? (
               <div className="text-center text-red-600">Bot not found</div>
             ) : (

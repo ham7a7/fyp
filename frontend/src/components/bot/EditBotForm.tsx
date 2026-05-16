@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { Button } from '../ui/Button';
 import { Input } from '../ui/Input';
+import LoadingState from '../ui/LoadingState';
 
 interface EditBotFormProps {
   botId: string;
@@ -79,11 +80,7 @@ export default function EditBotForm({ botId }: EditBotFormProps) {
   };
 
   if (fetchLoading) {
-    return (
-      <div className="flex items-center justify-center p-8">
-        <div className="text-gray-600">Loading bot...</div>
-      </div>
-    );
+    return <LoadingState message="Loading bot..." />;
   }
 
   if (!bot) {

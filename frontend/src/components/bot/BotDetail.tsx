@@ -5,6 +5,7 @@ import type { Bot } from '@/types/bot';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { Button } from '../ui/Button';
+import LoadingState from '../ui/LoadingState';
 import BotHeader from './BotHeader';
 import BotOverviewCard from './BotOverviewCard';
 
@@ -53,14 +54,7 @@ export default function BotDetail({ botId }: BotDetailProps) {
   };
 
   if (loading) {
-    return (
-      <div className="flex items-center justify-center p-12 min-h-[50vh]">
-        <div className="flex flex-col items-center gap-4">
-          <div className="w-10 h-10 border-4 border-blue-200 border-t-blue-600 rounded-full animate-spin"></div>
-          <div className="text-gray-500 font-medium">Loading bot details...</div>
-        </div>
-      </div>
-    );
+    return <LoadingState message="Loading bot details..." />;
   }
 
   if (error && !bot) {

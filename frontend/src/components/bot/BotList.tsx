@@ -5,6 +5,7 @@ import type { Bot } from '@/types/bot';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { Button } from '../ui/Button';
+import LoadingState from '../ui/LoadingState';
 
 export default function BotList() {
   const [bots, setBots] = useState<Bot[]>([]);
@@ -58,11 +59,7 @@ export default function BotList() {
   };
 
   if (loading) {
-    return (
-      <div className="flex items-center justify-center p-12">
-        <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-blue-600"></div>
-      </div>
-    );
+    return <LoadingState message="Loading bots..." className="min-h-0" />;
   }
 
   return (

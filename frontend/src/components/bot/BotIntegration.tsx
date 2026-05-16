@@ -4,6 +4,7 @@ import { botService } from '@/services/bot.service';
 import type { Bot } from '@/types/bot';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
+import LoadingState from '../ui/LoadingState';
 
 interface BotIntegrationProps {
   botId: string;
@@ -45,11 +46,7 @@ export default function BotIntegration({ botId }: BotIntegrationProps) {
   };
 
   if (loading) {
-    return (
-      <div className="flex items-center justify-center p-8">
-        <div className="text-gray-600">Loading integration details...</div>
-      </div>
-    );
+    return <LoadingState message="Loading integration details..." />;
   }
 
   if (error || !bot) {
