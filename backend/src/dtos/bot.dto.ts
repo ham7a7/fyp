@@ -15,6 +15,11 @@ export interface EditBotDto {
   botDescription?: string;
   botUsecase?: string;
   botLanguage?: string;
+  widgetHeaderName?: string;
+  widgetPrimaryColor?: string;
+  widgetDarkMode?: boolean;
+  widgetWelcomeTitle?: string;
+  widgetWelcomeMessage?: string;
 }
 
 export interface BotIdDto {

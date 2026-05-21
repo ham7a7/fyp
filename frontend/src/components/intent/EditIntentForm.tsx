@@ -5,6 +5,7 @@ import type { UpdateIntentDto } from '@/types/intent';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { Button } from '../ui/Button';
+import FormIntro from '../ui/FormIntro';
 import { Input } from '../ui/Input';
 
 interface EditIntentFormProps {
@@ -175,31 +176,20 @@ export default function EditIntentForm({ botId, intentId }: EditIntentFormProps)
   }
 
   return (
-    <div className="max-w-3xl mx-auto">
-      <div className="mb-6">
-        <h2 className="text-2xl font-bold text-gray-900">Edit Intent</h2>
-        <p className="text-sm text-gray-600 mt-1">
-          Update the intent configuration for your bot
-        </p>
-      </div>
+    <div className="max-w-4xl mx-auto space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
+    
+      <FormIntro
+        title="Edit Intent"
+        description="Update the intent configuration for your bot."
+        error={error}
+        successMessage={success}
+      />
 
-      {error && (
-        <div className="mb-4 bg-red-50 border border-red-200 text-red-800 px-4 py-3 rounded">
-          {error}
-        </div>
-      )}
-
-      {success && (
-        <div className="mb-4 bg-green-50 border border-green-200 text-green-800 px-4 py-3 rounded">
-          {success}
-        </div>
-      )}
-
-      <form onSubmit={handleSubmit} className="space-y-6">
+      <form onSubmit={handleSubmit} className="bg-white/70 backdrop-blur-md rounded-3xl border border-gray-100 shadow-sm p-8 space-y-10">
         {/* Intent Name */}
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
-            Intent Name <span className="text-red-500">*</span>
+        <div className="space-y-2">
+          <label className="block text-sm font-extrabold text-gray-900 uppercase tracking-wider">
+            Intent Name *
           </label>
           <Input
             type="text"
@@ -207,33 +197,40 @@ export default function EditIntentForm({ botId, intentId }: EditIntentFormProps)
             onChange={(e) => setName(e.target.value)}
             placeholder="e.g., greeting, product_inquiry"
             required
+            className="w-full bg-white transition-all bg-gray-50 focus:bg-white"
           />
         </div>
 
         {/* Training Phrases */}
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
-            Training Phrases <span className="text-red-500">*</span>
+        <div className="space-y-3 pt-6 border-t border-gray-100">
+          <label className="block text-sm font-extrabold text-gray-900 uppercase tracking-wider">
+            Training Phrases *
           </label>
-          <p className="text-sm text-gray-600 mb-3">
-            Add examples of what users might say to trigger this intent
+          <p className="text-sm font-medium text-gray-500 mb-3">
+            Add examples of what users might say to trigger this intent.
           </p>
-          <div className="space-y-2">
+          <div className="space-y-3">
             {trainingPhrases.map((phrase, index) => (
-              <div key={index} className="flex gap-2">
+              <div key={index} className="flex gap-3 items-center bg-gray-50/50 p-2 rounded-2xl border border-gray-100/50">
+                <span className="shrink-0 w-8 h-8 flex items-center justify-center bg-white rounded-full text-blue-600 font-bold shadow-sm text-sm border border-gray-100">
+                  {index + 1}
+                </span>
                 <Input
                   type="text"
                   value={phrase}
                   onChange={(e) => handleTrainingPhraseChange(index, e.target.value)}
                   placeholder="e.g., Hello, Hi there, Good morning"
+                  className="flex-1 bg-white border-0 shadow-sm"
                 />
                 <button
                   type="button"
                   onClick={() => handleRemoveTrainingPhrase(index)}
                   disabled={trainingPhrases.length === 1}
-                  className="px-3 py-2 text-red-600 hover:text-red-700 disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="shrink-0 p-2 text-red-500 hover:bg-red-50 hover:text-red-700 rounded-xl transition-colors disabled:opacity-30 disabled:hover:bg-transparent"
                 >
-                  Remove
+                  <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                  </svg>
                 </button>
               </div>
             ))}
@@ -241,36 +238,45 @@ export default function EditIntentForm({ botId, intentId }: EditIntentFormProps)
           <button
             type="button"
             onClick={handleAddTrainingPhrase}
-            className="mt-2 text-sm text-blue-600 hover:text-blue-700"
+            className="mt-4 px-5 py-2.5 bg-blue-50 text-blue-700 font-bold text-sm rounded-xl hover:bg-blue-100 transition-colors flex items-center gap-2"
           >
-            + Add Training Phrase
+            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+            </svg>
+            Add Phrase
           </button>
         </div>
 
         {/* Responses */}
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
-            Bot Responses {!isFulfillment && <span className="text-red-500">*</span>}
+        <div className="space-y-3 pt-6 border-t border-gray-100">
+          <label className="block text-sm font-extrabold text-gray-900 uppercase tracking-wider">
+            Responses {!isFulfillment && <span className="text-red-500">*</span>}
           </label>
-          <p className="text-sm text-gray-600 mb-3">
-            Define how the bot should respond when this intent is detected
+          <p className="text-sm font-medium text-gray-500 mb-3">
+            How the bot should respond when this intent is triggered.
           </p>
-          <div className="space-y-2">
+          <div className="space-y-3">
             {responses.map((response, index) => (
-              <div key={index} className="flex gap-2">
-                <Input
-                  type="text"
+              <div key={index} className="flex gap-3 items-start bg-green-50/20 p-3 rounded-2xl border border-green-100/50">
+                <span className="shrink-0 mt-1 w-8 h-8 flex items-center justify-center bg-white rounded-full text-green-600 font-bold shadow-sm text-sm border border-gray-100">
+                  {index + 1}
+                </span>
+                <textarea
                   value={response}
                   onChange={(e) => handleResponseChange(index, e.target.value)}
-                  placeholder="e.g., Hello! How can I help you today?"
+                  placeholder={`e.g., "Hello! How can I help you today?"`}
+                  rows={2}
+                  className="flex-1 px-4 py-3 bg-white border border-gray-200 placeholder:text-gray-400 text-gray-700 rounded-xl focus:outline-none focus:ring-4 focus:ring-blue-100 focus:border-blue-500 transition-all resize-none shadow-sm"
                 />
                 <button
                   type="button"
                   onClick={() => handleRemoveResponse(index)}
                   disabled={responses.length === 1}
-                  className="px-3 py-2 text-red-600 hover:text-red-700 disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="shrink-0 mt-1 p-2 text-red-500 hover:bg-red-50 hover:text-red-700 rounded-xl transition-colors disabled:opacity-30 disabled:hover:bg-transparent"
                 >
-                  Remove
+                  <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                  </svg>
                 </button>
               </div>
             ))}
@@ -278,68 +284,81 @@ export default function EditIntentForm({ botId, intentId }: EditIntentFormProps)
           <button
             type="button"
             onClick={handleAddResponse}
-            className="mt-2 text-sm text-blue-600 hover:text-blue-700"
+            className="mt-4 px-5 py-2.5 bg-green-50 text-green-700 font-bold text-sm rounded-xl hover:bg-green-100 transition-colors flex items-center gap-2"
           >
-            + Add Response
+            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+            </svg>
+            Add Response
           </button>
         </div>
 
-        {/* Webhook Settings */}
-        <div className="border-t pt-6">
-          <div className="flex items-center mb-4">
+        {/* Webhook/Fulfillment */}
+        <div className="pt-8 border-t border-gray-100">
+          <div className="flex items-center gap-3 mb-6 bg-purple-50/50 p-4 rounded-2xl border border-purple-100">
             <input
               type="checkbox"
               id="isFulfillment"
+              name="isFulfillment"
               checked={isFulfillment}
               onChange={(e) => setIsFulfillment(e.target.checked)}
-              className="h-4 w-4 text-blue-600 rounded"
+              className="h-5 w-5 text-purple-600 focus:ring-purple-500 border-gray-300 rounded cursor-pointer"
             />
-            <label htmlFor="isFulfillment" className="ml-2 text-sm font-medium text-gray-700">
-              Use Webhook for Response
+            <label htmlFor="isFulfillment" className="block text-base font-bold text-purple-900 cursor-pointer">
+              Enable Webhook Fulfillment
             </label>
+            <p className="text-sm font-medium text-purple-600/70 ml-auto hidden sm:block">
+              Send requests to an external API
+            </p>
           </div>
 
           {isFulfillment && (
-            <div className="space-y-4 ml-6">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Webhook URL <span className="text-red-500">*</span>
+            <div className="space-y-6 animate-in fade-in slide-in-from-top-4 duration-300">
+              <div className="space-y-2">
+                <label className="block text-sm font-extrabold text-gray-900 uppercase tracking-wider">
+                  Webhook URL *
                 </label>
                 <Input
                   type="url"
                   value={webhookUrl}
                   onChange={(e) => setWebhookUrl(e.target.value)}
-                  placeholder="https://your-webhook-endpoint.com/handle"
+                  placeholder="https://api.yourdomain.com/webhook"
+                  className="w-full bg-gray-50 focus:bg-white"
                 />
+                <p className="mt-1 text-xs text-gray-500 font-medium">
+                  The bot will call this URL to get the response dynamically.
+                </p>
               </div>
 
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Webhook Headers (Optional)
+              <div className="pt-4">
+                <label className="block text-sm font-extrabold text-gray-900 uppercase tracking-wider mb-3">
+                  Webhook Headers
                 </label>
-                <div className="space-y-2">
+                <div className="space-y-3">
                   {webhookHeaders.map((header, index) => (
-                    <div key={index} className="flex gap-2">
+                    <div key={index} className="flex gap-3 items-center bg-gray-50/50 p-2 rounded-2xl border border-gray-100/50">
                       <Input
                         type="text"
                         value={header.key}
                         onChange={(e) => handleWebhookHeaderChange(index, 'key', e.target.value)}
-                        placeholder="Header name"
-                        className="flex-1"
+                        placeholder="e.g., Authorization"
+                        className="flex-1 bg-white border-0 shadow-sm"
                       />
                       <Input
                         type="text"
                         value={header.value}
                         onChange={(e) => handleWebhookHeaderChange(index, 'value', e.target.value)}
-                        placeholder="Header value"
-                        className="flex-1"
+                        placeholder="e.g., Bearer token..."
+                        className="flex-1 bg-white border-0 shadow-sm"
                       />
                       <button
                         type="button"
                         onClick={() => handleRemoveWebhookHeader(index)}
-                        className="px-3 py-2 text-red-600 hover:text-red-700"
+                        className="shrink-0 p-2 text-red-500 hover:bg-red-50 hover:text-red-700 rounded-xl transition-colors"
                       >
-                        Remove
+                         <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                         </svg>
                       </button>
                     </div>
                   ))}
@@ -347,9 +366,12 @@ export default function EditIntentForm({ botId, intentId }: EditIntentFormProps)
                 <button
                   type="button"
                   onClick={handleAddWebhookHeader}
-                  className="mt-2 text-sm text-blue-600 hover:text-blue-700"
+                  className="mt-4 px-5 py-2.5 bg-blue-50 text-blue-700 font-bold text-sm rounded-xl hover:bg-blue-100 transition-colors flex items-center gap-2"
                 >
-                  + Add Header
+                  <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                  </svg>
+                  Add Header
                 </button>
               </div>
             </div>
@@ -357,18 +379,19 @@ export default function EditIntentForm({ botId, intentId }: EditIntentFormProps)
         </div>
 
         {/* Form Actions */}
-        <div className="flex gap-3 pt-6 border-t">
-          <Button type="submit" disabled={submitting}>
-            {submitting ? 'Updating...' : 'Update Intent'}
-          </Button>
-          <button
+        <div className="pt-6 border-t border-gray-100 flex justify-end gap-3">
+          <Button
             type="button"
+            variant="outline"
             onClick={() => router.push(`/dashboard/bots/${botId}/intents`)}
-            className="px-4 py-2 bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300"
             disabled={submitting}
+            className="w-full sm:w-auto px-8"
           >
             Cancel
-          </button>
+          </Button>
+          <Button type="submit" disabled={submitting} className="w-full sm:w-auto px-8 shadow-sm hover:shadow-md transition-shadow">
+            {submitting ? 'Updating Intent...' : 'Update Intent'}
+          </Button>
         </div>
       </form>
     </div>

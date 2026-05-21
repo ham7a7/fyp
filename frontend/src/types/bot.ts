@@ -8,10 +8,19 @@ export interface Bot {
   language: string;
   status: string;
   origins?: string[];
+  widgetSettings?: WidgetSettings;
   publicBotId: string;
   apiKey: string;
   createdAt: Date;
   updatedAt: Date;
+}
+
+export interface WidgetSettings {
+  headerName: string;
+  primaryColor: string;
+  darkMode: boolean;
+  welcomeTitle: string;
+  welcomeMessage: string;
 }
 
 // DTOs for API Requests
@@ -32,6 +41,11 @@ export interface EditBotDto {
   botDescription?: string;
   botUsecase?: string;
   botLanguage?: string;
+  widgetHeaderName?: string;
+  widgetPrimaryColor?: string;
+  widgetDarkMode?: boolean;
+  widgetWelcomeTitle?: string;
+  widgetWelcomeMessage?: string;
 }
 
 export interface BotIdDto {

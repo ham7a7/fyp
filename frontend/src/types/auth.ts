@@ -15,6 +15,16 @@ export interface RegisterCredentials {
   password: string;
 }
 
+export interface UpdateProfileCredentials {
+  name: string;
+  email: string;
+}
+
+export interface UpdatePasswordCredentials {
+  currentPassword: string;
+  newPassword: string;
+}
+
 export interface AuthResponse {
   message: string;
   user?: User;
@@ -26,5 +36,7 @@ export interface AuthContextType {
   login: (credentials: LoginCredentials) => Promise<void>;
   register: (credentials: RegisterCredentials) => Promise<void>;
   logout: () => Promise<void>;
+  updateProfile: (credentials: UpdateProfileCredentials) => Promise<AuthResponse>;
+  updatePassword: (credentials: UpdatePasswordCredentials) => Promise<AuthResponse>;
   isAuthenticated: boolean;
 }

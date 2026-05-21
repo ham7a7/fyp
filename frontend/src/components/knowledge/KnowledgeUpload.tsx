@@ -116,22 +116,25 @@ export default function KnowledgeUpload({ botId, onUploadSuccess }: KnowledgeUpl
   };
 
   return (
-    <div className="bg-white rounded-lg shadow p-6 space-y-4">
+    <div className="bg-white/70 backdrop-blur-md rounded-3xl shadow-sm border border-gray-100 p-8 space-y-6">
       <div>
-        <h3 className="text-xl font-semibold text-gray-900 mb-2">Upload Knowledge Document</h3>
-        <p className="text-sm text-gray-600">
+        <h3 className="text-xl font-extrabold text-gray-900 tracking-tight mb-2">Upload Knowledge Document</h3>
+        <p className="text-sm font-medium text-gray-500">
           Upload documents and images to train your bot. Supported formats: PDF, DOC, DOCX, TXT, CSV, Images (JPEG, PNG, GIF, WebP) • Max 10MB
         </p>
       </div>
 
       {error && (
-        <div className="bg-red-50 border border-red-200 text-red-800 px-4 py-3 rounded">
+        <div className="bg-red-50 border border-red-100 text-red-700 px-6 py-4 rounded-2xl shadow-sm text-sm font-medium">
           {error}
         </div>
       )}
 
       {success && (
-        <div className="bg-green-50 border border-green-200 text-green-800 px-4 py-3 rounded">
+        <div className="bg-green-50 border border-green-100 text-green-700 px-6 py-4 rounded-2xl shadow-sm text-sm font-medium flex items-center gap-2">
+          <svg className="w-5 h-5 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+          </svg>
           {success}
         </div>
       )}
@@ -142,10 +145,10 @@ export default function KnowledgeUpload({ botId, onUploadSuccess }: KnowledgeUpl
         onDragLeave={handleDrag}
         onDragOver={handleDrag}
         onDrop={handleDrop}
-        className={`relative border-2 border-dashed rounded-lg p-8 text-center transition-colors ${
+        className={`relative border-2 border-dashed rounded-3xl p-10 text-center transition-all duration-200 ${
           dragActive
-            ? 'border-blue-500 bg-blue-50'
-            : 'border-gray-300 hover:border-gray-400 bg-gray-50'
+            ? 'border-blue-500 bg-blue-50/50 shadow-inner'
+            : 'border-gray-200 hover:border-gray-300 bg-gray-50/50'
         }`}
       >
         <input
@@ -175,11 +178,11 @@ export default function KnowledgeUpload({ botId, onUploadSuccess }: KnowledgeUpl
           </div>
 
           {file ? (
-            <div className="space-y-2">
-              <p className="text-sm font-medium text-gray-900">Selected file:</p>
-              <div className="inline-flex items-center gap-2 px-4 py-2 bg-white border border-gray-300 rounded-lg">
+            <div className="space-y-3">
+              <p className="text-sm font-extrabold text-gray-900 uppercase tracking-wider">Selected file:</p>
+              <div className="inline-flex items-center gap-3 px-5 py-3 bg-white border border-gray-200 shadow-sm rounded-xl">
                 <svg
-                  className="w-5 h-5 text-blue-600"
+                  className="w-6 h-6 text-blue-500"
                   fill="none"
                   viewBox="0 0 24 24"
                   stroke="currentColor"
@@ -192,12 +195,12 @@ export default function KnowledgeUpload({ botId, onUploadSuccess }: KnowledgeUpl
                   />
                 </svg>
                 <div className="text-left">
-                  <p className="text-sm font-medium text-gray-900">{file.name}</p>
-                  <p className="text-xs text-gray-500">{formatFileSize(file.size)}</p>
+                  <p className="text-sm font-bold text-gray-900">{file.name}</p>
+                  <p className="text-xs font-medium text-gray-500">{formatFileSize(file.size)}</p>
                 </div>
                 <button
                   onClick={() => setFile(null)}
-                  className="ml-2 text-red-600 hover:text-red-700"
+                  className="ml-3 p-1.5 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors"
                   disabled={uploading}
                 >
                   <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -213,19 +216,19 @@ export default function KnowledgeUpload({ botId, onUploadSuccess }: KnowledgeUpl
             </div>
           ) : (
             <>
-              <p className="text-gray-600">
+              <p className="text-gray-500 font-medium">
                 Drag and drop your file here, or
               </p>
               <label
                 htmlFor="file-input"
-                className="inline-block px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 cursor-pointer"
+                className="inline-flex items-center justify-center px-6 py-2.5 bg-white border border-gray-200 text-gray-900 font-bold shadow-sm rounded-xl hover:bg-gray-50 hover:border-gray-300 cursor-pointer transition-all"
               >
                 Browse Files
               </label>
             </>
           )}
 
-          <p className="text-xs text-gray-500">
+          <p className="text-xs font-medium text-gray-400 mt-2">
             Supported: PDF, DOC, DOCX, TXT, CSV, JPEG, PNG, GIF, WebP • Max size: 10MB
           </p>
         </div>
@@ -233,8 +236,8 @@ export default function KnowledgeUpload({ botId, onUploadSuccess }: KnowledgeUpl
 
       {/* Upload Button */}
       {file && (
-        <div className="flex justify-end">
-          <Button onClick={handleUpload} disabled={uploading}>
+        <div className="flex justify-end pt-4">
+          <Button onClick={handleUpload} disabled={uploading} className="px-8 shadow-sm">
             {uploading ? (
               <span className="flex items-center gap-2">
                 <svg className="animate-spin h-4 w-4" viewBox="0 0 24 24">

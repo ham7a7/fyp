@@ -1,9 +1,11 @@
 import { apiClient } from '@/lib/api-client';
 import type {
-    AuthResponse,
-    LoginCredentials,
-    RegisterCredentials,
-    User,
+  AuthResponse,
+  LoginCredentials,
+  RegisterCredentials,
+  UpdatePasswordCredentials,
+  UpdateProfileCredentials,
+  User,
 } from '@/types/auth';
 
 export const authService = {
@@ -26,5 +28,16 @@ export const authService = {
     } catch (error) {
       return null;
     }
+  },
+
+  async updateProfile(credentials: UpdateProfileCredentials): Promise<AuthResponse> {
+    return await apiClient.patch<AuthResponse>(
+      '/api/users/me',
+      credentials
+    );
+  },
+
+  async updatePassword(credentials: UpdatePasswordCredentials): Promise<AuthResponse> {
+    return await apiClient.patch<AuthResponse>('/api/users/me/password', credentials);
   },
 };

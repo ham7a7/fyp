@@ -2,18 +2,21 @@
 
 import { authService } from '@/services/auth.service';
 import type {
-    AuthContextType,
-    LoginCredentials,
-    RegisterCredentials,
-    User,
+  AuthContextType,
+  AuthResponse,
+  LoginCredentials,
+  RegisterCredentials,
+  UpdatePasswordCredentials,
+  UpdateProfileCredentials,
+  User,
 } from '@/types/auth';
 import { useRouter } from 'next/navigation';
 import {
-    createContext,
-    useCallback,
-    useContext,
-    useEffect,
-    useState,
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useState,
 } from 'react';
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -81,12 +84,35 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   }, [router]);
 
+  const updateProfile = useCallback(
+    async (credentials: UpdateProfileCredentials):Promise<AuthResponse> => {
+      
+      const res = await authService.updateProfile(credentials);
+      setUser(res.user || null);
+      return res;
+  
+    },
+    []
+  );
+
+  const updatePassword = useCallback(
+    async (credentials: UpdatePasswordCredentials):Promise<AuthResponse> =>  {
+     
+      const res = await authService.updatePassword(credentials);
+      return res
+
+    },
+    []
+  );
+
   const value = {
     user,
     isLoading,
     login,
     register,
     logout,
+    updateProfile,
+    updatePassword,
     isAuthenticated: !!user,
   };
 

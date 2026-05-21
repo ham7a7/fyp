@@ -19,12 +19,10 @@ export function RegisterForm() {
 
   if (isCheckingAuth) {
     return (
-      <div className="w-full max-w-md mx-auto">
-        <div className="bg-white rounded-lg shadow-md p-8">
-          <div className="text-center">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
-            <p className="mt-4 text-gray-600">Loading...</p>
-          </div>
+      <div className="w-full">
+        <div className="bg-white rounded-3xl shadow-xl border border-gray-100 p-12 text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
+          <p className="mt-4 font-medium text-gray-500">Loading...</p>
         </div>
       </div>
     );
@@ -58,17 +56,20 @@ export function RegisterForm() {
   };
 
   return (
-    <div className="w-full max-w-md mx-auto">
-      <div className="bg-white rounded-lg shadow-md p-8">
-        <h2 className="text-2xl font-bold text-center mb-6">Register</h2>
+    <div className="w-full">
+      <div className="bg-white rounded-3xl shadow-xl border border-gray-100 p-8 sm:p-10">
+        <div className="text-center mb-8">
+          <h2 className="text-3xl font-extrabold text-gray-900">Create an account</h2>
+          <p className="text-gray-500 mt-2 font-medium">Start building your chatbot today.</p>
+        </div>
 
         {error && (
-          <div className="mb-4 p-3 bg-red-50 border border-red-200 text-red-700 rounded-md text-sm">
+          <div className="mb-6 p-4 bg-red-50 border-l-4 border-red-500 text-red-700 rounded-r-xl text-sm font-medium">
             {error}
           </div>
         )}
 
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <form onSubmit={handleSubmit} className="space-y-5">
           <Input
             label="Name"
             type="text"
@@ -112,20 +113,20 @@ export function RegisterForm() {
           <Button
             type="submit"
             variant="primary"
-            className="w-full"
+            className="w-full mt-2"
             isLoading={isLoading}
           >
-            {isLoading ? 'Creating account...' : 'Register'}
+            {isLoading ? 'Creating account...' : 'Create account'}
           </Button>
         </form>
 
-        <p className="mt-4 text-center text-sm text-gray-600">
+        <p className="mt-8 text-center text-sm font-medium text-gray-500">
           Already have an account?{' '}
           <Link
             href="/login"
-            className="text-blue-600 hover:text-blue-700 font-medium"
+            className="text-blue-600 hover:text-blue-700 font-bold transition-colors"
           >
-            Login here
+            Sign in instead
           </Link>
         </p>
       </div>
