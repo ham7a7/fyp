@@ -8,6 +8,7 @@ declare module "express-serve-static-core" {
   interface Request {
     bot?: IBotModel;
     intent?:IIntentModel
+    rawBody?: Buffer; // unparsed JSON body, used to check WhatsApp webhook signatures
   }
 }
 

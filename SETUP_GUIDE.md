@@ -27,6 +27,20 @@ MONGODB_CONNECTION_URI=your_mongodb_connection_string
 SESSION_SECRET=your_session_secret
 COOKIE_SECRET=your_cookie_secret
 FRONTEND_URL=http://localhost:3001
+
+# AI models: AI_PROVIDER is "openai" or "openrouter"
+AI_PROVIDER=openai
+AI_CHAT_MODEL=gpt-4o
+OPENAI_API_KEY=your_openai_api_key
+OPENROUTER_API_KEY=your_openrouter_api_key  # only needed when AI_PROVIDER=openrouter
+
+# Cloudflare R2 (knowledge file storage)
+R2_ACCOUNT_ID=your_cloudflare_account_id
+R2_ACCESS_KEY_ID=your_r2_access_key_id
+R2_SECRET_ACCESS_KEY=your_r2_secret_access_key
+R2_BUCKET_NAME=your_bucket
+R2_FOLDER_NAME=documents
+R2_ENDPOINT_URL=https://<account_id>.r2.cloudflarestorage.com
 ```
 
 4. Build the TypeScript code:

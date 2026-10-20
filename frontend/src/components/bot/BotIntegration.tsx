@@ -5,6 +5,7 @@ import type { Bot } from '@/types/bot';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import LoadingState from '../ui/LoadingState';
+import WhatsAppIntegration from './WhatsAppIntegration';
 
 interface BotIntegrationProps {
   botId: string;
@@ -79,7 +80,11 @@ fetch('http://localhost:3000/api/bots/chat-with-bot', {
   },
   body: JSON.stringify({
     publicBotId: '${bot.publicBotId}',
-    message: 'Hello, how can you help me?'
+    message: 'Hello, how can you help me?',
+    // Optional: your user's ID, so the bot remembers them across conversations
+    visitorId: 'user-123',
+    // Optional: the conversationId from the previous response, to continue that conversation
+    // conversationId: '...'
   })
 })
 .then(response => response.json())
@@ -235,12 +240,16 @@ fetch('http://localhost:3000/api/bots/chat-with-bot', {
             <h4 className="font-extrabold text-gray-900 mb-3">Response Format</h4>
             <pre className="bg-gray-50/80 border border-gray-200 p-5 rounded-2xl overflow-x-auto text-sm font-medium text-gray-700">
               <code>{`{
-  "response": "Hello! I'm here to help you..."
+  "response": "Hello! I'm here to help you...",
+  "conversationId": "6650f1c2a9b4e3d2c1b0a987"
 }`}</code>
             </pre>
           </div>
         </div>
       </div>
+
+      {/* WhatsApp Integration */}
+      <WhatsAppIntegration botId={bot._id} />
 
       {/* Additional Resources */}
       <div className="bg-blue-50 border border-blue-200 rounded-lg p-6">
@@ -258,6 +267,10 @@ fetch('http://localhost:3000/api/bots/chat-with-bot', {
           <li className="flex items-start gap-2">
             <span>🌐</span>
             <span>The widget automatically includes the bot ID, so no API key is needed for widget integration.</span>
+          </li>
+          <li className="flex items-start gap-2">
+            <span>🧠</span>
+            <span>The widget remembers visitors automatically. If your site has logged-in users, add <code>data-user-id=&quot;your user&apos;s ID&quot;</code> to the script tag so the bot recognizes them on any device.</span>
           </li>
           <li className="flex items-start gap-2">
             <span>⚡</span>

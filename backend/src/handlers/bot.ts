@@ -1,19 +1,18 @@
-import axios from "axios";
 import type { Request, Response } from "express";
 import mongoose from "mongoose";
 import BotModel from "../database/schemas/bot.js";
-import IntentModel from "../database/schemas/intent.js";
+import ConversationModel from "../database/schemas/conversation.js";
 import type {
   BotIdDto,
+  ChatHistoryDto,
   ChatWithBotDto,
   CreateBotDto,
   DeleteBotDto,
   EditBotDto,
 } from "../dtos/bot.dto.js";
 import type { IBotModel } from "../types/botModel.js";
-import type { IIntentModel } from "../types/intentModel.js";
+import { generateReply } from "../utils/chatUtils.js";
 import { decrypt, encrypt, generateKey } from "../utils/cryptoUtils.js";
-import { askQuestion } from "../utils/ragUtils.js";
 
 export const createBot = async (
   req: Request<{}, {}, CreateBotDto>,
@@ -305,31 +304,21 @@ export const chatWithBot = async (
   res: Response,
 ) => {
   // TODO: Validate origin of the request
-  const { message, publicBotId } = req.body;
+  const { message, publicBotId, conversationId, visitorId } = req.body;
   const bot = await BotModel.findOne({ publicBotId: publicBotId });
   if (!bot) {
     return res.status(404).json({ message: "Bot not found" });
   }
 
-  const intents: IIntentModel[] | null = await IntentModel.find({
-    botId: bot._id,
-    ownerId: bot.ownerId,
-  }).select({
-    name: 1,
-    _id: 1,
-    trainingPhrases: 1,
-    responses: 1,
-    isFulfillment: 1,
-    webhookUrl: 1,
-    webhookHeaders: 1,
-  });
   try {
-    let answer = await askQuestion(message, bot, intents);
-    console.log("Answer:", answer);
-    answer = await handleWebhook(message, answer);
-    console.log("Answer:", answer);
+    const reply = await generateReply({
+      bot,
+      message,
+      conversationId,
+      visitorId,
+    });
 
-    res.json({ response: answer });
+    res.json({ response: reply.answer, conversationId: reply.conversationId });
   } catch (error: any) {
     console.error("Error in chatWithBot:", error?.message);
     res.status(500).json({
@@ -339,42 +328,28 @@ export const chatWithBot = async (
   }
 };
 
-const handleWebhook = async (message: string, AIAnswer: string) => {
-  const answer = AIAnswer;
-  if (
-    answer &&
-    typeof answer === "string" &&
-    answer.includes("fulfillment") &&
-    answer.includes("webhookUrl")
-  ) {
-    const fulfillmentData = JSON.parse(answer);
-    if (
-      fulfillmentData &&
-      fulfillmentData.fulfillment &&
-      fulfillmentData.webhookUrl
-    ) {
-      // Call the webhook with the necessary data
-      const intent = await IntentModel.findById(fulfillmentData._id);
-      if (intent) {
-        const res = await axios.post(
-          fulfillmentData.webhookUrl,
-          {
-            query: message,
-            intentId: fulfillmentData._id,
-            webhookHeaders: fulfillmentData.webhookHeaders,
-          },
-          {
-            headers: fulfillmentData.webhookHeaders,
-          },
-        );
-        if (!res.data || !res.data.response) {
-          throw new Error(
-            "Invalid response from webhook, missing 'response' field",
-          );
-        }
-        return res.data.response;
-      }
+// Used by the widget to show the messages of the current conversation again after a page change
+export const getChatHistory = async (
+  req: Request<{}, {}, ChatHistoryDto>,
+  res: Response,
+) => {
+  try {
+    const { publicBotId, conversationId, visitorId } = req.body;
+    const bot = await BotModel.findOne({ publicBotId }).select({ _id: 1 });
+    if (!bot) {
+      return res.status(404).json({ message: "Bot not found" });
     }
+
+    const conversation = await ConversationModel.findOne(
+      { _id: conversationId, botId: bot._id, visitorId },
+      { messages: { $slice: -50 } },
+    ).lean();
+    if (!conversation) {
+      return res.status(404).json({ message: "Conversation not found" });
+    }
+
+    return res.status(200).json({ messages: conversation.messages });
+  } catch (error) {
+    return res.status(500).json({ message: "Server error", error });
   }
-  return answer;
 };

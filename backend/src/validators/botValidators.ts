@@ -95,6 +95,32 @@ export const chatWithBotValidators: ValidationChain[] = [
     .withMessage("Bot ID must be a string")
     .notEmpty()
     .withMessage("Bot ID cannot be empty"),
+  body("conversationId")
+    .optional({ values: "null" })
+    .isMongoId()
+    .withMessage("Conversation ID must be a valid ID"),
+  body("visitorId")
+    .optional({ values: "null" })
+    .isString()
+    .withMessage("Visitor ID must be a string")
+    .isLength({ min: 1, max: 100 })
+    .withMessage("Visitor ID must be between 1 and 100 characters"),
+];
+
+export const chatHistoryValidators: ValidationChain[] = [
+  body("publicBotId")
+    .isString()
+    .withMessage("Bot ID must be a string")
+    .notEmpty()
+    .withMessage("Bot ID cannot be empty"),
+  body("conversationId")
+    .isMongoId()
+    .withMessage("Conversation ID must be a valid ID"),
+  body("visitorId")
+    .isString()
+    .withMessage("Visitor ID must be a string")
+    .isLength({ min: 1, max: 100 })
+    .withMessage("Visitor ID must be between 1 and 100 characters"),
 ];
 
 export const publicBotIdParamValidators: ValidationChain[] = [

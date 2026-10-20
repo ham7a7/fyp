@@ -32,6 +32,15 @@ export const BotSchema: Schema<IBotModel> = new Schema(
         default: "Hi there! How can I help you today?",
       },
     },
+    whatsappSettings: {
+      enabled: { type: Boolean, default: false },
+      phoneNumberId: { type: String },
+      // Encrypted, and left out of queries unless selected with "+whatsappSettings.<field>"
+      accessToken: { type: String, select: false },
+      appSecret: { type: String, select: false },
+      // Meta sends this back when verifying the webhook URL
+      verifyToken: { type: String },
+    },
     // intents: [{ type: mongoose.Types.ObjectId, ref: "Intent" }],
     // knowledgeBase: {
     //   type: mongoose.Types.ObjectId,

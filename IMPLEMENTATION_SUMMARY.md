@@ -194,8 +194,8 @@ GET    /auth/me        - Fetch current user
 - **Database**: MongoDB with Mongoose ODM
 - **Authentication**: Passport.js (Local Strategy)
 - **Session**: express-session with MongoStore
-- **File Storage**: Google Cloud Storage
-- **Text Extraction**: PDF-parse, Mammoth, Tesseract.js
+- **File Storage**: Cloudflare R2 (S3-compatible API)
+- **Text Extraction**: PDF-parse, Mammoth, OpenAI GPT-4o vision (images)
 
 ### 1. Authentication & Security ✅
 
@@ -292,14 +292,14 @@ DELETE /:botId/knowledge/:id       - Delete document
 **File Processing Pipeline:**
 1. **Upload** - Receive file via multipart/form-data
 2. **Extract** - Extract text from file (PDF, DOC, images)
-3. **Store** - Upload to Google Cloud Storage
+3. **Store** - Upload to Cloudflare R2
 4. **Vectorize** - Create embeddings and store in MongoDB
 5. **Index** - Add to vector search index
 
 **Text Extraction:**
 - ✅ PDF text extraction (pdf-parse)
 - ✅ Word document parsing (mammoth)
-- ✅ Image OCR (tesseract.js)
+- ✅ Image OCR (OpenAI GPT-4o vision)
 - ✅ Plain text and CSV support
 
 ### 5. Database Models
@@ -353,7 +353,7 @@ DELETE /:botId/knowledge/:id       - Delete document
   title: string;
   originalFileName: string;
   fileType: string;
-  fileUrl: string (GCS);
+  fileKey: string (R2 object key);
   createdAt: Date;
 }
 ```
@@ -459,7 +459,7 @@ const splitter = new RecursiveCharacterTextSplitter({
 });
 
 const embeddings = new OpenAIEmbeddings({
-  modelName: "text-embedding-3-small",
+  model: "text-embedding-3-small",
   apiKey: process.env.OPENAI_API_KEY
 });
 ```
@@ -593,21 +593,21 @@ Response:
 - Third-party platforms
 - Custom UI implementations
 
-### 3. Google Cloud Storage ✅
+### 3. Cloudflare R2 Storage ✅
 
 **File Upload Pipeline:**
 1. User uploads file via frontend
 2. Backend receives multipart/form-data
-3. File saved to GCS bucket
-4. Public URL generated
-5. Metadata saved to MongoDB
+3. File saved to the R2 bucket
+4. Object key and metadata saved to MongoDB
+5. Files are viewed through short-lived signed URLs (the bucket is private)
 
-**GCS Configuration:**
+**R2 Configuration:**
 ```typescript
 {
-  bucketName: "chatbot-knowledge-base",
-  folder: "documents/{botId}/",
-  permissions: "public-read"
+  bucketName: R2_BUCKET_NAME,
+  key: "{R2_FOLDER_NAME}/{botId}/{timestamp}-{fileName}",
+  permissions: "private (signed URLs, 1 hour)"
 }
 ```
 
@@ -637,11 +637,11 @@ Response:
 ### AI/ML
 | Technology | Version | Purpose |
 |------------|---------|---------|
-| OpenAI API | Latest | LLM & Embeddings |
+| OpenAI API (or OpenRouter) | Latest | LLM & Embeddings |
 | LangChain | Latest | RAG framework |
 | MongoDB Atlas | Latest | Vector search |
 | pdf-parse | Latest | PDF extraction |
-| Tesseract.js | Latest | OCR |
+| GPT-4o vision | Latest | Image OCR |
 
 ### DevOps & Tools
 | Technology | Purpose |
@@ -718,10 +718,16 @@ FRONTEND_URL=http://localhost:3001
 MONGODB_CONNECTION_URI=mongodb+srv://...
 SESSION_SECRET=your_session_secret
 COOKIE_SECRET=your_cookie_secret
+AI_PROVIDER=openai
+AI_CHAT_MODEL=gpt-4o
 OPENAI_API_KEY=sk-...
-GCS_BUCKET_NAME=your_bucket
-GCS_FOLDER_NAME=documents
-GOOGLE_APPLICATION_CREDENTIALS=./credentials.json
+OPENROUTER_API_KEY=sk-or-...  # only needed when AI_PROVIDER=openrouter
+R2_ACCOUNT_ID=your_cloudflare_account_id
+R2_ACCESS_KEY_ID=your_r2_access_key_id
+R2_SECRET_ACCESS_KEY=your_r2_secret_access_key
+R2_BUCKET_NAME=your_bucket
+R2_FOLDER_NAME=documents
+R2_ENDPOINT_URL=https://<account_id>.r2.cloudflarestorage.com
 ```
 
 ---

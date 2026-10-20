@@ -1,61 +1,126 @@
 import { MongoDBAtlasVectorSearch } from "@langchain/mongodb";
-import { ChatOpenAI, OpenAIEmbeddings } from "@langchain/openai";
 import { RecursiveCharacterTextSplitter } from "@langchain/textsplitters";
 import { config } from "dotenv";
 import { mongoose } from "../database/db.js";
 import KnowledgeVectorModel from "../database/schemas/knowledgeVector.js";
+import {
+  createChatModel,
+  createEmbeddings,
+  createFastChatModel,
+} from "../ai.config.js";
 import type { IBotModel } from "../types/botModel.js";
+import type { IChatMessage } from "../types/conversationModel.js";
 import type { IIntentModel } from "../types/intentModel.js";
 config();
 
+const VECTOR_INDEX_NAME = "vector_index";
+
+const getVectorCollection = () =>
+  mongoose.connection.db!.collection(KnowledgeVectorModel.collection.name);
+
 // Initialize the Vector Store
 const getVectorStore = () => {
-  const embeddings = new OpenAIEmbeddings({
-    modelName: "text-embedding-3-small",
-    apiKey: process.env.OPENAI_API_KEY!,
-  });
-  const collection = mongoose.connection.db!.collection(
-    KnowledgeVectorModel.collection.name,
-  );
+  const embeddings = createEmbeddings();
+  const collection = getVectorCollection();
 
   return new MongoDBAtlasVectorSearch(embeddings, {
     collection: collection as any,
-    indexName: "vector_index", // The name of your Atlas Search Index
+    indexName: VECTOR_INDEX_NAME, // The name of your Atlas Search Index
     textKey: "text",
     embeddingKey: "embedding",
   });
 };
 
-// Ingestion: Split text and save vectors
+// Creates the Atlas Vector Search index if it doesn't exist. Without it, document
+// search silently returns no results and the bot can't answer from its knowledge
+export const ensureVectorIndex = async () => {
+  const collection = getVectorCollection();
+  const indexes = await collection.listSearchIndexes(VECTOR_INDEX_NAME).toArray();
+  if (indexes.length > 0) return;
+
+  await collection.createSearchIndex({
+    name: VECTOR_INDEX_NAME,
+    type: "vectorSearch",
+    definition: {
+      fields: [
+        // text-embedding-3-small creates 1536-dimension vectors
+        { type: "vector", path: "embedding", numDimensions: 1536, similarity: "cosine" },
+        // Lets the search only look at one bot's documents
+        { type: "filter", path: "botId" },
+      ],
+    },
+  });
+  console.log(
+    `Created the "${VECTOR_INDEX_NAME}" vector search index, it takes about a minute to be ready`,
+  );
+};
+
+// Ingestion: Split text and save vectors. Throws if it fails, so the upload isn't
+// reported as saved while the bot can't actually search the document
 export const addDocumentToVectorDB = async (
   text: string,
   metadata: Record<string, any> = {},
 ) => {
-  try {
-    // Split text into chunks
-    const splitter = new RecursiveCharacterTextSplitter({
-      chunkSize: 1000,
-      chunkOverlap: 200,
-    });
-    const docs = await splitter.createDocuments([text], [metadata]);
+  // Split text into chunks
+  const splitter = new RecursiveCharacterTextSplitter({
+    chunkSize: 1000,
+    chunkOverlap: 200,
+  });
+  const docs = await splitter.createDocuments([text], [metadata]);
 
-    // Store in MongoDB
-    const vectorStore = getVectorStore();
-    await vectorStore.addDocuments(docs);
-  } catch (error: any) {
-    return error;
-  }
+  // Store in MongoDB
+  const vectorStore = getVectorStore();
+  await vectorStore.addDocuments(docs);
+};
+
+// Where the conversation happens, so the answer can be formatted for it
+export type Channel = "widget" | "whatsapp";
+
+// WhatsApp doesn't render Markdown, it has its own formatting
+const WHATSAPP_FORMATTING_RULES = `
+FORMATTING RULES:
+- You are replying in WhatsApp, which doesn't support Markdown.
+- Don't use headings, tables, or [text](url) links. Write links as plain URLs.
+- For emphasis use *bold* or _italic_ (single symbols), and use "-" for lists.
+`;
+
+// Rewrites a follow-up message (e.g. "what about weekends?") into a question that
+// makes sense on its own, so the vector search finds the right documents
+const toStandaloneQuestion = async (
+  query: string,
+  history: Pick<IChatMessage, "role" | "content">[],
+): Promise<string> => {
+  const llm = createFastChatModel();
+  const transcript = history
+    .map(({ role, content }) => `${role === "user" ? "User" : "Assistant"}: ${content}`)
+    .join("\n");
+  const response = await llm.invoke([
+    {
+      role: "system",
+      content:
+        "Rewrite the user's latest message as a standalone question that can be understood without the chat history. Keep the same language. If it is already standalone, return it unchanged. Reply with the question only.",
+    },
+    {
+      role: "user",
+      content: `Chat history:\n${transcript}\n\nLatest message: ${query}`,
+    },
+  ]);
+
+  return response.content.toString().trim() || query;
 };
 
 export const askQuestion = async (
   query: string,
   bot: IBotModel,
   intents: IIntentModel[] | null,
+  history: Pick<IChatMessage, "role" | "content">[] = [],
+  memories: string[] = [],
+  channel: Channel = "widget",
 ): Promise<string> => {
   const botId = bot._id.toString();
   try {
     const vectorStore = getVectorStore();
-    const llm = new ChatOpenAI({ modelName: "gpt-4o" });
+    const llm = createChatModel();
 
     // Filter by botId to ensure we only retrieve context for this specific bot
     const filter = {
@@ -69,7 +134,9 @@ export const askQuestion = async (
       filter: filter,
     });
     // Retrieve relevant documents
-    const relevantDocs = await retriever.invoke(query);
+    const searchQuery =
+      history.length > 0 ? await toStandaloneQuestion(query, history) : query;
+    const relevantDocs = await retriever.invoke(searchQuery);
     // Construct context from retrieved documents
     const context = relevantDocs.map((d) => d.pageContent).join("\n\n");
     const systemPrompt = `
@@ -78,6 +145,7 @@ export const askQuestion = async (
 Your job is to answer the user's message using:
 1. The provided intents
 2. The provided context
+3. The conversation history and what you remember about the user
 
 INTENT MATCHING RULES:
 - Match intents based on semantic meaning, not exact wording.
@@ -119,9 +187,14 @@ NORMAL RESPONSE RULES:
 
 CONTEXT RULES:
 - Use the provided context only if no intent matches.
-- If the answer is not found in either intents or context, say:
+- If the answer is not found in the intents, the context, the conversation history, or what you remember about the user, say:
   "I don't know."
 
+MEMORY RULES:
+- Use the conversation history to understand follow-up messages.
+- Use what you remember about the user to personalize responses when relevant, for example by using their name.
+- You can answer questions about the user, like their name, from what you remember about them.
+${channel === "whatsapp" ? WHATSAPP_FORMATTING_RULES : ""}
 IMPORTANT:
 - Never invent information.
 - Never create webhook URLs or headers yourself.
@@ -143,6 +216,9 @@ ${intents && intents.length > 0
 
 CONTEXT:
 ${context}
+
+WHAT YOU REMEMBER ABOUT THIS USER (from previous conversations):
+${memories.length > 0 ? memories.map((memory) => `- ${memory}`).join("\n") : "Nothing yet."}
     `
     
 //     `You are a helpful AI assistant. Use the following intents and context to answer the user's question. If the answer is not in intents or the context, say you don't know.
@@ -168,6 +244,7 @@ ${context}
     // Invoke LLM with context
     const response = await llm.invoke([
       { role: "system", content: systemPrompt },
+      ...history.map(({ role, content }) => ({ role, content })),
       { role: "user", content: query },
     ]);
 

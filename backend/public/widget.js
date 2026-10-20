@@ -3,6 +3,8 @@
   const apiUrl =
     document.currentScript.getAttribute("data-api-url") ||
     "http://localhost:3000";
+  // Sites with logged-in users can pass their own user ID, so the bot remembers them on any device
+  const userId = document.currentScript.getAttribute("data-user-id");
 
   const defaultWidgetSettings = {
     headerName: "AI Assistant",
@@ -15,6 +17,10 @@
   // Load marked.js library
   const markedScript = document.createElement("script");
   markedScript.src = "https://cdn.jsdelivr.net/npm/marked/marked.min.js";
+  const markedReady = new Promise((resolve) => {
+    markedScript.onload = resolve;
+    markedScript.onerror = resolve;
+  });
   document.head.appendChild(markedScript);
 
   // Inject styles
@@ -584,6 +590,40 @@
   let isOpen = false;
   let messageCount = 0;
 
+  // Memory
+  // Long-term: a visitor ID kept in localStorage, so the bot remembers this visitor on future visits
+  // Short-term: the current conversation, kept in sessionStorage until the browser tab is closed
+  const visitorId = userId || getOrCreateVisitorId();
+  const conversationKey = `chatbot-conversation-${botId}`;
+  let conversationId = readStorage("sessionStorage", conversationKey);
+
+  // Storage can be blocked by privacy settings, then memory only lasts for the current page
+  function readStorage(type, key) {
+    try {
+      return window[type].getItem(key);
+    } catch (e) {
+      return null;
+    }
+  }
+
+  function writeStorage(type, key, value) {
+    try {
+      window[type].setItem(key, value);
+    } catch (e) {}
+  }
+
+  function getOrCreateVisitorId() {
+    const key = "chatbot-visitor-id";
+    let id = readStorage("localStorage", key);
+    if (!id) {
+      id = Array.from(crypto.getRandomValues(new Uint8Array(16)), (byte) =>
+        byte.toString(16).padStart(2, "0")
+      ).join("");
+      writeStorage("localStorage", key, id);
+    }
+    return id;
+  }
+
   // Elements
   const bubble = document.getElementById("chatbot-toggle");
   const chatWindow = document.getElementById("chatbot-window");
@@ -628,16 +668,15 @@
   closeBtn.addEventListener("click", toggleChat);
 
   // Format time
-  function formatTime() {
-    const now = new Date();
-    return now.toLocaleTimeString("en-US", {
+  function formatTime(date = new Date()) {
+    return date.toLocaleTimeString("en-US", {
       hour: "2-digit",
       minute: "2-digit",
     });
   }
 
   // Add message to chat
-  function addMessage(text, isUser = false) {
+  function addMessage(text, isUser = false, sentAt = new Date()) {
     const welcomeMsg = messagesContainer.querySelector(".chatbot-welcome");
     if (welcomeMsg) {
       welcomeMsg.remove();
@@ -661,7 +700,7 @@
 
     const timeDiv = document.createElement("div");
     timeDiv.className = "chatbot-message-time";
-    timeDiv.textContent = formatTime();
+    timeDiv.textContent = formatTime(sentAt);
 
     contentDiv.appendChild(textDiv);
     contentDiv.appendChild(timeDiv);
@@ -708,6 +747,8 @@
         body: JSON.stringify({
           publicBotId: botId,
           message: message,
+          conversationId: conversationId,
+          visitorId: visitorId,
         }),
       });
 
@@ -717,6 +758,11 @@
       }
 
       const data = await response.json();
+
+      if (data.conversationId) {
+        conversationId = data.conversationId;
+        writeStorage("sessionStorage", conversationKey, conversationId);
+      }
 
       console.log("Bot response data:", data.response);
       setTyping(false);
@@ -780,5 +826,39 @@
     }
   }
 
+  // Show the messages of the current conversation again after the visitor moves to another page
+  async function restoreConversation() {
+    if (!botId || !conversationId) return;
+
+    try {
+      const response = await fetch(`${apiUrl}/api/bots/chat-history`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          publicBotId: botId,
+          conversationId: conversationId,
+          visitorId: visitorId,
+        }),
+      });
+
+      if (!response.ok) return;
+
+      const data = await response.json();
+      await markedReady;
+      data.messages.forEach((msg) =>
+        addMessage(msg.content, msg.role === "user", new Date(msg.createdAt))
+      );
+
+      // Restored messages were already seen, so don't count them as unread
+      messageCount = 0;
+      badge.classList.remove("show");
+    } catch (error) {
+      // The bot still remembers the conversation, only the old messages aren't shown
+    }
+  }
+
   loadWidgetSettings();
+  restoreConversation();
 })();

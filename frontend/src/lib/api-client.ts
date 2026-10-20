@@ -1,6 +1,6 @@
 import axios, { AxiosInstance, AxiosRequestConfig, AxiosResponse } from 'axios';
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000';
+export const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000';
 
 console.log('🔧 API Client Configuration:');
 console.log('   Base URL:', API_BASE_URL);
@@ -44,7 +44,11 @@ class ApiClient {
       (error) => {
         if (error.response) {
           // Server responded with error status
-          const message = error.response.data?.message || 'An error occurred';
+          // Validation errors come as a list, show the first one
+          const message =
+            error.response.data?.message ||
+            error.response.data?.errors?.[0]?.msg ||
+            'An error occurred';
           console.error('❌ API Error Response:', {
             status: error.response.status,
             data: error.response.data,

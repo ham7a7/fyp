@@ -16,6 +16,13 @@ export interface IBotModel {
     welcomeTitle: string;
     welcomeMessage: string;
   };
+  whatsappSettings?: {
+    enabled: boolean;
+    phoneNumberId?: string;
+    accessToken?: string; // encrypted
+    appSecret?: string; // encrypted
+    verifyToken?: string;
+  };
   // intents: mongoose.Types.ObjectId[];
   // knowledgeBase: mongoose.Types.ObjectId[];
   //   widgetSettings: mongoose.Types.ObjectId;

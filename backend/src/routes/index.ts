@@ -6,6 +6,7 @@ import bot from "./bot.js";
 import intent from "./intent.js";
 import knowledge from "./knowledge.js";
 import users from "./users.js";
+import whatsapp from "./whatsapp.js";
 
 const appRouter: Router = Router();
 appRouter.use("/api/auth", auth);
@@ -18,5 +19,6 @@ appRouter.use(
   validateBotParam,
   knowledge
 );
+appRouter.use("/api/whatsapp", whatsapp);
 
 export default appRouter;

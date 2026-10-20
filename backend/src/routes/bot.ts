@@ -4,6 +4,7 @@ import {
     createBot,
     deleteBot,
     editBot,
+    getChatHistory,
     getUserBot,
     getUserBots,
     getUserBotWithParam,
@@ -15,6 +16,7 @@ import validator from "../middlewares/validator.js";
 import { verifyAuth } from "../middlewares/verifyAuth.js";
 import {
     botIdValidators,
+    chatHistoryValidators,
     chatWithBotValidators,
     createBotValidators,
     editBotValidators,
@@ -54,6 +56,12 @@ auth.post(
   chatWithBotValidators,
   validator,
   chatWithBot
+);
+auth.post(
+  "/chat-history",
+  chatHistoryValidators,
+  validator,
+  getChatHistory
 );
 
 export default auth;

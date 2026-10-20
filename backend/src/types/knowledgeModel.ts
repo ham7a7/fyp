@@ -4,7 +4,8 @@ export interface IKnowledgeModel {
   ownerId: import("mongoose").Types.ObjectId;
   title: string;
   description: string;
-  fileUrl: string;
+  fileKey: string;
+  fileUrl?: string;
   originalFileName: string;
   fileType: string;
   createdAt: Date;
