@@ -18,12 +18,16 @@ const modelName = (model: string) =>
   useOpenRouter && !model.includes("/") ? `openai/${model}` : model;
 
 export const createChatModel = (
-  model: string = process.env.AI_CHAT_MODEL || "gpt-4o"
+  model: string = process.env.AI_CHAT_MODEL || "gpt-4o",
+  // Caps the answer length. OpenRouter reserves credit for the maximum, so a lower cap
+  // keeps calls working on a small balance
+  maxTokens?: number
 ) =>
   new ChatOpenAI({
     model: modelName(model),
     apiKey,
     configuration,
+    ...(maxTokens && { maxTokens }),
   });
 
 // Cheaper model for helper tasks like rewriting questions and updating memory

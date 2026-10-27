@@ -66,7 +66,7 @@ const imageToText = async (
   mimeType: string,
 ): Promise<string> => {
   // Always GPT-4o here: the chat model may be changed to one without image support
-  const llm = createChatModel("gpt-4o");
+  const llm = createChatModel("gpt-4o", 3000);
   const response = await llm.invoke([
     {
       role: "user",

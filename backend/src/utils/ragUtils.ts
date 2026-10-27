@@ -134,8 +134,17 @@ export const askQuestion = async (
       filter: filter,
     });
     // Retrieve relevant documents
+    // If rewriting fails (e.g. the AI provider is out of credit), search with the original message
     const searchQuery =
-      history.length > 0 ? await toStandaloneQuestion(query, history) : query;
+      history.length > 0
+        ? await toStandaloneQuestion(query, history).catch((error) => {
+            console.error(
+              "Couldn't rewrite the follow-up question, searching with the original message:",
+              error?.message,
+            );
+            return query;
+          })
+        : query;
     const relevantDocs = await retriever.invoke(searchQuery);
     // Construct context from retrieved documents
     const context = relevantDocs.map((d) => d.pageContent).join("\n\n");
